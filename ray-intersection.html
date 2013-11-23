@@ -1,0 +1,108 @@
+<html lang="en">
+<head>
+<style>
+
+  body {
+    font-size: 10px;
+    font-family: "Arial, Helvetica, sans-serif";
+    margin: 0;
+    padding: 0;
+  }
+
+  ul.info{
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  ul.info li {
+    display: block;
+    float: left;
+    font-size: 10px;
+  }
+
+  #ray-intersection {
+    border: 1px solid #CCC;
+    z-index: 10;
+    width: 500px;
+    height: 500px;
+  }
+
+</style>
+
+<script src="lib/jquery-1.9.1.min.js"></script>
+<script src="lib/three.v63.min.js"></script>
+<script src="lib/detector.js"></script>
+<script src="lib/stats.min.js"></script>
+
+<!-- all demo code is here or available on my github account under code-samples
+     https://github.com/cubicleDowns/code-samples  -->
+
+<script src="js/scene.js"></script>
+<script src="js/camera.js"></script>
+<script src="js/setup.js"></script>
+
+</head>
+<body>
+<div id="ray-intersection"></div>
+<h3>Click on the canvas to project a ray and intersect a cube in the Three.js scene</h3>
+<ul class='info'><li>jQuery: v<span id="jqv"></span> | </li><li> THREE.js: v<span id="tjsv"></span></li></ul>
+
+</body>
+
+  <script>
+
+    // GLOBAL anchor for requestAnimationFrame browser hooks
+    var demo;
+
+    function init() {
+      $('#jqv').text($.fn.jquery);
+      $('#tjsv').text(THREE.REVISION);
+
+      demo = new Demo.Scene("ray-intersection");
+      listeners();
+
+      // start the animation
+      demo.animate();
+    }
+
+    function listeners () {
+
+      document.addEventListener('click', castRay, false);
+    }
+
+    function castRay (event) {
+
+      event.preventDefault();
+
+      var mouse = {};
+      // since this isn't a full screen app, lets use the dimensions of the container div.
+      console.log(event.clientX / demo.jqContainer.width());
+      console.log(event.clientY / demo.jqContainer.height());
+
+      mouse.x = (event.clientX / demo.jqContainer.width()) * 2 -1;
+      mouse.y = -(event.clientY / demo.jqContainer.height()) * 2 + 1;
+
+      var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
+      demo.projector.unprojectVector(vector, demo.cameras.liveCam);
+
+      demo.raycaster.set( demo.cameras.liveCam, vector.sub(demo.cameras.liveCam.position).normalize() );
+      var intersects = demo.raycaster.intersectObject( demo.scene.children );
+      console.log('intersects: ' + intersects.length);
+      if(intersects.length > 0) {
+        debugger;
+      }
+
+    }
+
+    $(document).ready(function () {
+      init();
+    });
+
+  </script>
+
+</html>
+
