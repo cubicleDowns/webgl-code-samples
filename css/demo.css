@@ -6,6 +6,13 @@ body {
   pointer-events: none;
 }
 
+h2 {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  text-transform: uppercase;
+}
+
 ul.info{
   position: absolute;
   bottom: 4px;

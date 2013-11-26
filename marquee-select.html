@@ -18,8 +18,11 @@
 <body>
 <div id="ray-intersection"></div>
 <h3>Drag across the canvas element to select/highlight cubes.</h3>
+<h3>The cubes shoudl flicker as their colors are randomly changed on the mousemove event if they are within the marquee!</h3>
 <ul class='info'><li>jQuery: v<span id="jqv"></span> | </li><li> THREE.js: v<span id="tjsv"></span></li></ul>
 <div id="select-marquee"></div>
+<h2><a href="http://blog.tempt3d.com/">Blog.tempt3d.com</a></h3>
+
 </body>
 
   <script>
@@ -74,6 +77,14 @@
 
       mousedowncoords.x = event.clientX;
       mousedowncoords.y = event.clientY;
+
+      // adjust the mouse select
+      pos.x = ((event.clientX - offset.x) / demo.jqContainer.width()) * 2 -1;
+      pos.y = -((event.clientY - offset.y) / demo.jqContainer.height()) * 2 + 1;
+
+      var vector = new THREE.Vector3(pos.x, pos.y, 1);
+
+      demo.projector.unprojectVector(vector, demo.cameras.liveCam);
 
       // removing previous click marker.
       $(".clickMarkers").remove();
@@ -132,11 +143,7 @@
       }
     }
 
-    // takes the mouse down and current mouse positions.
-    // unprojects the 3D mesh coordinates
-    // figures out if the now 2D coordinates are within the bounds of the drag select area.
-    // if the coordinate is, the color of the mesh is randomly changed
-    function findCubesByVertices(currentMouse){
+    function findCubesByVertices(location){
       var currentMouse = {},
           mouseInitialDown = {},
           units,
@@ -144,6 +151,9 @@
           inside = false,
           selectedUnits = [],
           dupeCheck = {};
+
+      currentMouse.x = location.x;
+      currentMouse.y = location.y;
 
       mouseInitialDown.x = (mousedowncoords.x - offset.x);
       mouseInitialDown.y = (mousedowncoords.y - offset.y);
@@ -153,14 +163,12 @@
 
       for(var i = 0; i < units.length; i++) {
         inside = withinBounds(units[i].pos, bounds);
-        // use an object to check for duplicate hits.
         if(inside && (dupeCheck[units[i].id] === undefined)){
           selectedUnits.push(units[i]);
           dupeCheck[units[i].name] = true;
         }
       }
 
-      // unique array of intersected meshes
       return selectedUnits;
     }
 
@@ -209,13 +217,16 @@
         return false;
     }
 
+
+    // takes all of the meshes in the "collisions" array.
+    //   unprojects each cubes vertices and returns an array of vertices
     function getUnitVertCoordinates (threeJsContext) {
 
-      var units = [],
+      var unprojectedCoordinates = [],
           verts = [],
           child,
           prevChild,
-          unit,
+          coord,
           vector,
           pos,
           temp,
@@ -223,8 +234,11 @@
 
       for(i = 0; i < demo.collisions.length; i++) {
           child = demo.collisions[i];
-          child.updateMatrixWorld();
 
+
+          // this is a silly way to list the potential vertices but done for a reason
+          // if you only wanted to select across front-facing vertices,  you could easily
+          // comment out some of the following to unproject specific faces.
           verts = [
               child.geometry.vertices[0],
               child.geometry.vertices[1],
@@ -239,16 +253,19 @@
           for(q = 0; q < verts.length; q++) {
               vector = verts[q].clone();
               vector.applyMatrix4(child.matrixWorld);
-              unit = {};
-              unit.id = child.id;
-              unit.mesh = child;
-              unit.pos = toScreenXY(vector);;
-              units.push(unit);
+              coord = {};
+              coord.id = child.id;
+              coord.mesh = child;
+              coord.pos = toScreenXY(vector);;
+              unprojectedCoordinates.push(coord);
           }
       }
-      return units;
+      return unprojectedCoordinates;
     }
 
+
+    // this returns the unprojected XY coordinate.
+    // TODO:  cache unprojection
     function toScreenXY (position) {
 
       var pos = position.clone();
