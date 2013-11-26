@@ -1,4 +1,4 @@
 code-samples
 ============
 
-Code samples for my blog, joshstaples.blogger.com
+Code samples for my blog, blog.tempt3d.com

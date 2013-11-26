@@ -75,6 +75,7 @@
       mousedowncoords.x = event.clientX;
       mousedowncoords.y = event.clientY;
 
+      // adjust the mouse select
       pos.x = ((event.clientX - offset.x) / demo.jqContainer.width()) * 2 -1;
       pos.y = -((event.clientY - offset.y) / demo.jqContainer.height()) * 2 + 1;
 
@@ -107,6 +108,7 @@
       event.preventDefault();
       event.stopPropagation();
 
+      // reset the marquee selection
       resetMarquee();
 
       // appending a click marker.
