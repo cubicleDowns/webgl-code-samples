@@ -105,9 +105,6 @@ Demo.Scene.Setup.prototype = {
   highlight: function (meshes) {
     for(var i = 0; i < meshes.length; i++) {
       meshes[i].mesh.material.color = this.randomColor();
-      meshes[i].mesh.material.color.setHex(0x0000FF);
-
-      meshes[i].mesh.needsUpdate = true;
     }
   }
 };
