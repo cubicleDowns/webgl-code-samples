@@ -3,6 +3,7 @@
 <head>
 <!-- All demo code is here or available on my github account under code-samples
      https://github.com/cubicleDowns/code-samples  -->
+
 <link rel="stylesheet" href="css/demo.css" type="text/css">
 
 <script src="lib/jquery-1.9.1.min.js"></script>
@@ -16,7 +17,7 @@
 
 </head>
 <body>
-<div id="ray-intersection" style="left: 0; top: 0"></div>
+<div id="ray-intersection"></div>
 <h3>Click on the canvas to project a ray and intersect a cube in the Three.js scene</h3>
 <ul class='info'><li>jQuery: v<span id="jqv"></span> | </li><li> THREE.js: v<span id="tjsv"></span></li></ul>
 
@@ -51,8 +52,12 @@
       var mouse = {};
 
       // since this isn't a full screen app, lets use the dimensions of the container div.
-      mouse.x = (event.clientX / demo.jqContainer.width()) * 2 -1;
-      mouse.y = -(event.clientY / demo.jqContainer.height()) * 2 + 1;
+      // OFFSET change.  Now I'll adjust the offset of the canvas element from the click.
+      var leftOffset = demo.jqContainer.offset().left;
+      var topOffset = demo.jqContainer.offset().top;
+
+      mouse.x = ((event.clientX - leftOffset) / demo.jqContainer.width()) * 2 -1;
+      mouse.y = -((event.clientY - topOffset) / demo.jqContainer.height()) * 2 + 1;
 
       var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
       demo.projector.unprojectVector(vector, demo.cameras.liveCam);
@@ -60,18 +65,18 @@
       var ray = new THREE.Raycaster(demo.cameras.liveCam.position, vector.sub(demo.cameras.liveCam.position).normalize());
 
       // Casting a ray to find if there is an intersection.
-      // Notice I reference an array of the cubes previously added to the scene.
-      //   This is to prevent the ray from intersecting with any non-cube objects.
+      // Notice I reference an array of the cubes added to the scene.
+      //   This is to prevent the ray from intersecting with any non-cube meshes.
       var intersected = ray.intersectObjects( demo.collisions );
 
-      // removing previous click marker
+      // removing previous click marker.
       $(".clickMarkers").remove();
 
       // appending a click marker.
       demo.jqContainer.append('<div class="clickMarkers" style="pointer-events:none; position: absolute; z-index: 100; left: ' + event.offsetX + 'px; top: ' + event.offsetY +'px">D</div>' );
 
+      // only change the first intersected object.
       if(intersected.length > 0) {
-        // slap a random color on that cube, yo.
         intersected[0].object.material.color = demo.setup.randomColor();
       }
     }

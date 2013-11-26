@@ -5,8 +5,6 @@ Demo.Scene = function (containerId) {
 
   this.scene = new THREE.Scene();
   this.projector = new THREE.Projector();
-  this.raycaster = new THREE.Raycaster();
-
   this.renderer = new THREE.WebGLRenderer({antialias: true});
 
   this.jqContainer = $('#' + containerId);
@@ -18,6 +16,7 @@ Demo.Scene = function (containerId) {
   this.setup = new Demo.Scene.Setup({ context: this, cubes: 3});
   this.stats = null;
 
+  this.rotateCamera = false;
 
   this.theta = 0;
   this.radius = 100;
@@ -68,14 +67,14 @@ Demo.Scene.prototype = {
    */
   render: function () {
 
-    this.theta += 0.1;
+    if(this.rotateCamera){
+      this.theta += 0.1;
 
-    this.cameras.liveCam.position.x = this.radius * Math.sin(THREE.Math.degToRad(this.theta));
-    this.cameras.liveCam.position.y = this.radius * Math.sin(THREE.Math.degToRad(this.theta));
-    this.cameras.liveCam.position.z = this.radius * Math.cos(THREE.Math.degToRad(this.theta));
-    this.cameras.liveCam.lookAt(this.scene.position);
-
-    var temp = this.scene.position;
+      this.cameras.liveCam.position.x = this.radius * Math.sin(THREE.Math.degToRad(this.theta));
+      this.cameras.liveCam.position.y = this.radius * Math.sin(THREE.Math.degToRad(this.theta));
+      this.cameras.liveCam.position.z = this.radius * Math.cos(THREE.Math.degToRad(this.theta));
+      this.cameras.liveCam.lookAt(this.scene.position);
+    }
 
     // NOTE: using the global variable "demo" instead of "this".
     this.renderer.render(this.scene, demo.cameras.liveCam);

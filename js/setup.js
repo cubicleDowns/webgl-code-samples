@@ -1,4 +1,3 @@
-
 var Demo = Demo || {};
 Demo.Scene = Demo.Scene || {};
 
@@ -28,7 +27,6 @@ Demo.Scene.Setup.prototype = {
   init: function () {
 
     this.setupRenderer();
-
     this.lights();
     this.createGeometry();
   },
@@ -63,12 +61,9 @@ Demo.Scene.Setup.prototype = {
 
     for(i = 0; i < this.numCubes; i++) {
 
-      //thx Paul Irish et al.
-      color = new THREE.Color().setHex('0x' + ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6));
-      material = new THREE.MeshLambertMaterial({color: color});
+      material = new THREE.MeshLambertMaterial({color: this.randomColor()});
 
       this.mesh = new THREE.Mesh(cube, material);
-
       this.mesh.position.x = Math.random() * 100 - 50;
       this.mesh.position.y = Math.random() * 100 - 50;
       this.mesh.position.z = Math.random() * 100 - 50;
@@ -94,6 +89,25 @@ Demo.Scene.Setup.prototype = {
     dl.position.set(rotate,rotate,rotate);
 
     this.context.scene.add(dl);
+  },
+
+  /**
+   *  Create a random color
+   */
+  randomColor: function () {
+      //cleverness via Paul Irish et al.
+      return new THREE.Color().setHex('0x' + ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6));
+  },
+
+  /**
+   *   Change a group of meshes to random colors.
+   */
+  highlight: function (meshes) {
+    for(var i = 0; i < meshes.length; i++) {
+      // meshes[i].
+      meshes[i].mesh.material.color = this.randomColor();
+      meshes[i].mesh.needsUpdate = true;
+    }
   }
 };
 
