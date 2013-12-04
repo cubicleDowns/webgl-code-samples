@@ -51,7 +51,7 @@
         userColor2 = new THREE.Color(0xFF434C),
         cubeColor1 = new THREE.Color(0x6ACEEB),
         cubeColor2 = new THREE.Color(0xFFFFFF),
-        cubeColor3 = new THREE.Color(0x0E6569);
+        cubeColor3 = new THREE.Color(0xCCCCCC);
 
       // got this silly color scheme here:
       // https://kuler.adobe.com/Seaman-Deckhand-color-theme-3185617/
@@ -66,7 +66,6 @@
 
       createCubes();
       createRays();
-      toggleArrows();
 
       // start the animation
       // this also does all of the setup.  i've encapsulated all of this work for brevity.
@@ -343,10 +342,10 @@
       origin3 = new THREE.Vector3(x,y,-z);
       origin4 = new THREE.Vector3(-x,y,-z);
 
-      arrow1 = new THREE.ArrowHelper(setup.xyz1Direction, origin1, setup.length, 0xFFFFFF);
-      arrow2 = new THREE.ArrowHelper(setup.xyz2Direction, origin2, setup.length, 0xFFFFFF);
-      arrow3 = new THREE.ArrowHelper(setup.xyz3Direction, origin3, setup.length, 0xFFFFFF);
-      arrow4 = new THREE.ArrowHelper(setup.xyz4Direction, origin4, setup.length, 0xFFFFFF);
+      arrow1 = new THREE.ArrowHelper(setup.xyz1Direction, origin1, setup.length, 0x333333);
+      arrow2 = new THREE.ArrowHelper(setup.xyz2Direction, origin2, setup.length, 0x333333);
+      arrow3 = new THREE.ArrowHelper(setup.xyz3Direction, origin3, setup.length, 0x333333);
+      arrow4 = new THREE.ArrowHelper(setup.xyz4Direction, origin4, setup.length, 0x333333);
 
       _demo.arrows.push(arrow1);
       _demo.arrows.push(arrow2);
@@ -425,12 +424,6 @@
         collisions = rays[i].intersectObjects(_demo.collisions);
         ticUser1 = 0;
         ticUser2 = 0;
-
-        // if('num' in rays[i]) {
-        //   console.log('num: ' + rays[i].num + '  length: ' + collisions.length);
-        // } else {
-        //   console.log('length: ' + collisions.length);
-        // }
 
         for(j = 0; j < collisions.length; j++){
           if(collisions[j].object.ttt === 'user1'){

@@ -32,9 +32,11 @@ Demo.Scene = function (containerId) {
 Demo.Scene.prototype = {
 
   init: function () {
-    this.listeners();
-    this.statsSetup();
 
+    this.renderer.setClearColorHex( 0xEEEEEE, 0.2 );
+
+    this.listeners();
+    // this.statsSetup();
   },
 
   listeners: function () {
@@ -63,7 +65,7 @@ Demo.Scene.prototype = {
     // NOTE: using the global variable "demo" instead of "this".
       requestAnimationFrame(_demo.animate);
       _demo.render();
-      _demo.stats.update();
+      // _demo.stats.update();
       _demo.cameras.controls.update();
   },
 
