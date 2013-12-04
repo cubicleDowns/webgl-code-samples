@@ -41,7 +41,8 @@ Demo.Cameras.prototype = {
      */
     initPerspective: function () {
         this.liveCam = new THREE.PerspectiveCamera(this.FOV, this.ASPECT_RATIO, this.NEAR_PLANE, this.FAR_PLANE);
-        this.liveCam.position.z = 300;
+        this.liveCam.position.z = 200;
+
     }
 
 };

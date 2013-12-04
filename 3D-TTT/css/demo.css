@@ -3,7 +3,6 @@ body {
   font-family: "Arial, Helvetica, sans-serif";
   margin: 0;
   padding: 0;
-  pointer-events: none;
 }
 
 h2 {
@@ -28,18 +27,55 @@ ul.info li {
   font-size: 10px;
 }
 
+ul.menu {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.menu li {
+  display: block;
+  float: left;
+  font-size: 14px;
+  padding: 5px;
+  width: 100%;
+}
+
+#what {
+  position: absolute;
+  left: 5px;
+  top: 200px;
+  width: 300px;
+  color: #333;
+  z-index: 20;
+  font-size: 14px;
+  font-weight: bolder;
+}
+
+
+#winner {
+  font-size: 25px;
+  color: red;
+  position: absolute;
+  left: 200px;
+  top: 10px;
+}
 
 #ray-intersection {
   border: 1px solid #CCC;
   z-index: 10;
-  width: 500px;
-  height: 500px;
+  width: 600px;
+  height: 600px;
   /* OFFSET CHANGE */
   /* adding these values to demonstrate ray intersections anywhere in the scene */
   position: absolute;
-  left: 150px;
-  top: 74px;
+  right: 100px;
+  top: 100px;
   pointer-events: all;
+  background-color: #CCCCCC;
 }
 
 #select-marquee {

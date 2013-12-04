@@ -55,7 +55,7 @@ Demo.Scene.Setup.prototype = {
         rotatePos = 30 * Math.PI / 180,
         rotateNeg = -90 * Math.PI / 180;
 
-    this.context.scene.add(new THREE.AmbientLight(0x999999));
+    // this.context.scene.add(new THREE.AmbientLight(0xFFFFFF));
 
     dlPos = new THREE.DirectionalLight(0xFFFFFF, 1);
     dlPos.position.set(rotatePos,rotatePos,rotatePos);

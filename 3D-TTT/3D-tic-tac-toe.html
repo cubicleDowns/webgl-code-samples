@@ -19,69 +19,106 @@
 
 </head>
 <body>
+<div id="winner"></div>
 <div id="ray-intersection"></div>
-<h3>Click on the canvas to project a ray and intersect a cube in the Three.js scene</h3>
-<ul class='info'><li>jQuery: v<span id="jqv"></span> | </li><li> THREE.js: v<span id="tjsv"></span></li></ul>
-<h2><a href="http://blog.tempt3d.com/">Blog.tempt3d.com</a></h3>
+<div id="what">
+<p>This Tic-Tac-Toe demo uses THREE.js rays and ray casters to determine if either user has won.</p>
+<p>After each click, it projects a ray for each possible win combination and if it finds sequential intersections with clicks from the sameuser, a winner is declared.</p>
+<p><span style="color: #990000">User 1</span> | <span style="color: #000000">User 2</span>
+</div>
+<ul class="menu">
+  <li style="font-size: 25px; color: #660000">2 Player - 3D Tic Tac Toe</li>
+  <li><a id="toggle-arrows">Toggle Rays</a></li>
+  <li><a id="toggle-rotation">Toggle Rotation</a></li>
+</ul>
+<ul class="info"><li>jQuery: v<span id="jqv"></span> | </li><li> THREE.js: v<span id="tjsv"></span></li></ul>
+<h2><a href="http://blog.tempt3d.com/">blog.tempt3d.com</a></h3>
 
 </body>
 
   <script>
 
-    // GLOBAL anchor for requestAnimationFrame browser hooks
+    // GLOBAL anchor, _demo, for requestAnimationFrame browser hooks
     var _demo,
-        delta = 25,
+        gameOver = false,
+        gameDimensions = 3,
+        cubeSeparation = 25,
         cubeDim = 10,
+        jigger = new THREE.Vector3(0.1,0.1,0.1),
         turn = 1,
-        showArrows = true,
         rays = [],
-        userColor1,
-        userColor2;
+        userColor1 = new THREE.Color(0x30394F),
+        userColor2 = new THREE.Color(0xFF434C),
+        cubeColor1 = new THREE.Color(0x6ACEEB),
+        cubeColor2 = new THREE.Color(0xFFFFFF),
+        cubeColor3 = new THREE.Color(0x0E6569);
+
+      // got this silly color scheme here:
+      // https://kuler.adobe.com/Seaman-Deckhand-color-theme-3185617/
 
     function init() {
       $('#jqv').text($.fn.jquery);
       $('#tjsv').text(THREE.REVISION);
 
       _demo = new Demo.Scene("ray-intersection");
-      // _demo.rotateCamera = true;
+      _demo.rotateCamera = true;
       listeners();
 
       createCubes();
       createRays();
+      toggleArrows();
 
       // start the animation
       // this also does all of the setup.  i've encapsulated all of this work for brevity.
       _demo.animate();
     }
 
+    function listeners () {
+
+      $("#ray-intersection").click(function (e) {
+        if(!gameOver){
+          selectCube(e);
+        }
+      });
+
+      $("#toggle-arrows").click(function () {
+        toggleArrows();
+      });
+
+      $("#toggle-rotation").click(function () {
+        _demo.rotateCamera = false;
+      });
+    }
+
     function createCubes() {
 
       var i,j,k
         geo = new THREE.CubeGeometry(cubeDim, cubeDim, cubeDim),
-        materialVerts = new THREE.MeshLambertMaterial({color: _demo.setup.randomColor()});
-        materialOutside = new THREE.MeshLambertMaterial({color: _demo.setup.randomColor()}),
-        materialInside = new THREE.MeshLambertMaterial({color: _demo.setup.randomColor()});
+        materialVerts = new THREE.MeshLambertMaterial({color: cubeColor1}),
+        materialOutside = new THREE.MeshLambertMaterial({color: cubeColor2}),
+        materialInside = new THREE.MeshLambertMaterial({color: cubeColor3});
 
-      userColor1 = _demo.setup.randomColor();
-      userColor2 = _demo.setup.randomColor();
-
-      for(i = 0; i < 3; i++){
-        for(j = 0; j < 3; j++){
-          for(k = 0; k < 3; k++){
+      // this approach (with a little jiggering), should work for any dimesion tic-tac-toe setup.  e.g. 4x4x4
+      for(i = 0; i < gameDimensions; i++){
+        for(j = 0; j < gameDimensions; j++){
+          for(k = 0; k < gameDimensions; k++){
             var mat;
 
-            // center cube
             if(i * j * k === 1){
+              // center cube
               mat = materialInside;
-            } else if (i * j === 1 || i * k === 1 || j * k === 1) {  // axis cubes
+            } else if (i * j === 1 || i * k === 1 || j * k === 1) {
+              // axes cubes.   I had to look it up but yes, Axes is plural of Axis. Who knew!  =D
               mat = materialVerts;
             } else {
+              //everything else
               mat = materialOutside;
             }
             var mesh = new THREE.Mesh(geo.clone(), mat.clone());
-            _demo.collisions.push(mesh);
+            mesh.position = new THREE.Vector3((i-1)*cubeSeparation, (j-1)*cubeSeparation, (k-1)*cubeSeparation);
 
-            mesh.position = new THREE.Vector3((i-1)*delta, (j-1)*delta, (k-1)*delta);
+            // instead of using scene.children, I create a specific array for ray collisions.
+            _demo.collisions.push(mesh);
             _demo.scene.add(mesh);
           }
         }
@@ -89,210 +126,250 @@
     }
 
     function createRays() {
-      var i,j,k,
-          x,y,z,
-          ray, ray1, ray2, ray3, ray4,
-          length = 50,
-          xDirection = new THREE.Vector3(-1,0,0),
-          yDirection = new THREE.Vector3(0,-1,0),
-          zDirection = new THREE.Vector3(0,0,-1),
-          xy1Direction = new THREE.Vector3(-1,-1,0),
-          xy2Direction = new THREE.Vector3(-1,1,0),
-          xz1Direction = new THREE.Vector3(-1,0,-1),
-          xz2Direction = new THREE.Vector3(-1,0,1),
-          yz1Direction = new THREE.Vector3(0,-1,-1),
-          yz2Direction = new THREE.Vector3(0,1,-1),
-          xyz1Direction = new THREE.Vector3(-1,-1,-1),
-          xyz2Direction = new THREE.Vector3(1,-1,-1),
-          xyz3Direction = new THREE.Vector3(-1,-1,1),
-          xyz4Direction = new THREE.Vector3(1,-1,1),
-          origin,
-          color = 0x884400;
 
-      var geo = new THREE.CubeGeometry(5, 5, 5);
-      var mat = new THREE.MeshLambertMaterial({color: 0xFF0000});
+      var setup = {
+          xDirection: xDirection = new THREE.Vector3(-1,0,0),
+          yDirection: yDirection = new THREE.Vector3(0,-1,0),
+          zDirection: zDirection = new THREE.Vector3(0,0,-1),
+          xy1Direction: xy1Direction = new THREE.Vector3(-1,-1,0).normalize(),
+          xy2Direction: xy2Direction = new THREE.Vector3(-1,1,0).normalize(),
+          xz1Direction: xz1Direction = new THREE.Vector3(-1,0,-1).normalize(),
+          xz2Direction: xz2Direction = new THREE.Vector3(-1,0,1).normalize(),
+          yz1Direction: yz1Direction = new THREE.Vector3(0,-1,-1).normalize(),
+          yz2Direction: yz2Direction = new THREE.Vector3(0,1,-1).normalize(),
+          xyz1Direction: xyz1Direction = new THREE.Vector3(-1,-1,-1).normalize(),
+          xyz2Direction: xyz2Direction = new THREE.Vector3(1,-1,-1).normalize(),
+          xyz3Direction: xyz3Direction = new THREE.Vector3(-1,-1,1).normalize(),
+          xyz4Direction: xyz4Direction = new THREE.Vector3(1,-1,1).normalize(),
+          length: 20
+      };
+
+
+      // should be 27 of these guys.
+      create2DVectors(setup);
+
+      // should be 18 of these guys  (for a 3x3x3)
+      create2DDiagonals(setup);
+
+      // should be 4 of these guys
+      create3DDiagonals(setup);
+    }
+
+    function create2DVectors (setup) {
+
+      var i,j,
+          x,y,z,
+          arrow,
+          origin,
+          ray;
 
       // create 9 rays looking down X
-      for(i = 0; i < 3; i++){
-        for(j = 0; j < 3; j++){
+      for(i = 0; i < gameDimensions; i++){
+        for(j = 0; j < gameDimensions; j++){
 
-          x = 4 * delta;
-          y = (i - 1) * delta;
-          z = (j - 1) * delta;
+          x = 4 * cubeSeparation;
+          y = (i - 1) * cubeSeparation;
+          z = (j - 1) * cubeSeparation;
 
-          var origin = new THREE.Vector3(x,y,z);
-          if(showArrows){
-            var arrow = new THREE.ArrowHelper(xDirection, origin, length, 0xFF0000);
-            arrow.cast = true;
-            _demo.scene.add(arrow);
-          }
+          origin = new THREE.Vector3(x,y,z);
+          arrow = new THREE.ArrowHelper(setup.xDirection, origin, setup.length, 0xFF0000);
 
-          ray = new THREE.Raycaster(origin, xDirection);
+          _demo.scene.add(arrow);
+          _demo.arrows.push(arrow);
+
+          ray = new THREE.Raycaster(origin, setup.xDirection);
+          ray.num = '6';
           rays.push(ray);
         }
       }
 
       // create 9 rays looking down Y
-      for(i = 0; i < 3; i++){
-        for(j = 0; j < 3; j++){
+      for(i = 0; i < gameDimensions; i++){
+        for(j = 0; j < gameDimensions; j++){
 
-          y = 4 * delta;
-          x = (i - 1) * delta;
-          z = (j - 1) * delta;
+          y = 4 * cubeSeparation;
+          x = (i - 1) * cubeSeparation;
+          z = (j - 1) * cubeSeparation;
 
-          var origin = new THREE.Vector3(x,y,z);
-          if(showArrows){
-            var arrow = new THREE.ArrowHelper(yDirection, origin, length, 0x00FF00);
-            arrow.cast = true;
-            _demo.scene.add(arrow);
-          }
+          origin = new THREE.Vector3(x,y,z);
+          arrow = new THREE.ArrowHelper(setup.yDirection, origin, setup.length, 0x00FF00);
 
-          ray = new THREE.Raycaster(origin, yDirection);
+          _demo.scene.add(arrow);
+          _demo.arrows.push(arrow);
+
+          ray = new THREE.Raycaster(origin, setup.yDirection);
+          ray.num = '6';
           rays.push(ray);
 
         }
       }
 
       // create 9 rays looking down Z
-      for(i = 0; i < 3; i++){
-        for(j = 0; j < 3; j++){
+      for(i = 0; i < gameDimensions; i++){
+        for(j = 0; j < gameDimensions; j++){
 
-          z = 4 * delta;
-          y = (i - 1) * delta;
-          x = (j - 1) * delta;
+          z = 4 * cubeSeparation;
+          y = (i - 1) * cubeSeparation;
+          x = (j - 1) * cubeSeparation;
 
-          var origin = new THREE.Vector3(x,y,z);
+          origin = new THREE.Vector3(x,y,z);
+          arrow = new THREE.ArrowHelper(setup.zDirection, origin, setup.length, 0x0000FF);
 
-          if(showArrows){
-            var arrow = new THREE.ArrowHelper(zDirection, origin, length, 0x0000FF);
-            arrow.cast = true;
-            _demo.scene.add(arrow);
-          }
+          _demo.scene.add(arrow);
+          _demo.arrows.push(arrow);
 
-          ray = new THREE.Raycaster(origin, zDirection);
+          ray = new THREE.Raycaster(origin, setup.zDirection);
+          ray.num = '6';
           rays.push(ray);
-
         }
       }
+    }
+
+    function create2DDiagonals(setup) {
+
+      var i,j,
+          x,y,z,
+          arrow1,
+          arrow2,
+          origin1,
+          origin2,
+          ray1,
+          ray2;
 
       // create 6 rays for XY diagonals
-      for(i = 0; i < 3; i++){
+      for(i = 0; i < gameDimensions; i++){
 
-          x = 4 * delta;
-          y = 4 * delta;
-          z = (i - 1) * delta;
-          var origin1 = new THREE.Vector3(x,y,z);
-          var arrow1 = new THREE.ArrowHelper(xy1Direction.normalize(), origin1, length, 0xCC0000);
+          x = 4 * cubeSeparation;
+          y = 4 * cubeSeparation;
+          z = (i - 1) * cubeSeparation;
+
+          origin1 = new THREE.Vector3(x,y,z).add(jigger);
+          origin2 = new THREE.Vector3(x,-y,z).add(jigger);
+
+          arrow1 = new THREE.ArrowHelper(setup.xy1Direction, origin1, setup.length, 0xCC0000);
+          arrow2 = new THREE.ArrowHelper(setup.xy2Direction, origin2, setup.length, 0xCC0000);
+
           _demo.scene.add(arrow1);
+          _demo.scene.add(arrow2);
 
-          var origin2 = new THREE.Vector3(x,-y,z);
-          if(showArrows){
-            var arrow2 = new THREE.ArrowHelper(xy2Direction.normalize(), origin2, length, 0xCC0000);
-            _demo.scene.add(arrow2);
-          }
+          _demo.arrows.push(arrow1);
+          _demo.arrows.push(arrow2);
 
-          ray1 = new THREE.Raycaster(origin, xy1Direction.normalize());
-          ray2 = new THREE.Raycaster(origin, xy2Direction.normalize());
+          ray1 = new THREE.Raycaster(origin1, setup.xy1Direction);
+          ray2 = new THREE.Raycaster(origin2, setup.xy2Direction);
+
+          ray1.num = '3';
+          ray2.num = '3';
+
           rays.push(ray1);
           rays.push(ray2);
       }
 
       // create 6 rays for XZ diagonals
-      for(i = 0; i < 3; i++){
+      for(i = 0; i < gameDimensions; i++){
 
-          x = 4 * delta;
-          y = (i - 1) * delta;
-          z = 4 * delta;
-          origin1 = new THREE.Vector3(x,y,z);
-          origin2 = new THREE.Vector3(x,y,-z);
+          x = 4 * cubeSeparation;
+          y = (i - 1) * cubeSeparation;
+          z = 4 * cubeSeparation;
 
-          if(showArrows){
-            arrow1 = new THREE.ArrowHelper(xz1Direction.normalize(), origin1, length, 0x00CC00);
-            _demo.scene.add(arrow1);
+          origin1 = new THREE.Vector3(x,y,z).add(jigger);
+          origin2 = new THREE.Vector3(x,y,-z).add(jigger);
 
-            arrow2 = new THREE.ArrowHelper(xz2Direction.normalize(), origin2, length, 0x00CC00);
-            _demo.scene.add(arrow2);
-          }
+          arrow1 = new THREE.ArrowHelper(setup.xz1Direction, origin1, setup.length, 0x00CC00);
+          arrow2 = new THREE.ArrowHelper(setup.xz2Direction, origin2, setup.length, 0x00CC00);
 
-          ray1 = new THREE.Raycaster(origin, xz1Direction.normalize());
-          ray2 = new THREE.Raycaster(origin, xz2Direction.normalize());
+          _demo.scene.add(arrow1);
+          _demo.scene.add(arrow2);
+
+          _demo.arrows.push(arrow1);
+          _demo.arrows.push(arrow2);
+
+          ray1 = new THREE.Raycaster(origin1, setup.xz1Direction);
+          ray2 = new THREE.Raycaster(origin2, setup.xz2Direction);
+
+          ray1.num = '3';
+          ray2.num = '3';
+
           rays.push(ray1);
           rays.push(ray2);
       }
 
       // create 6 rays for YZ diagonals
-      for(i = 0; i < 3; i++){
+      for(i = 0; i < gameDimensions; i++){
 
-          x = (i - 1) * delta;
-          y = 4 * delta;
-          z = 4 * delta;
+          x = (i - 1) * cubeSeparation;
+          y = 4 * cubeSeparation;
+          z = 4 * cubeSeparation;
 
-          origin1 = new THREE.Vector3(x,y,z);
-          origin2 = new THREE.Vector3(x,-y,z);
+          origin1 = new THREE.Vector3(x,y,z).add(jigger);
+          origin2 = new THREE.Vector3(x,-y,z).add(jigger);
 
-          if(showArrows){
-            arrow1 = new THREE.ArrowHelper(yz1Direction.normalize(), origin1, length, 0x0000CC);
-            arrow2 = new THREE.ArrowHelper(yz2Direction.normalize(), origin2, length, 0x0000CC);
-            _demo.scene.add(arrow1);
-            _demo.scene.add(arrow2);
-          }
+          arrow1 = new THREE.ArrowHelper(setup.yz1Direction, origin1, setup.length, 0x0000CC);
+          arrow2 = new THREE.ArrowHelper(setup.yz2Direction, origin2, setup.length, 0x0000CC);
 
-          ray1 = new THREE.Raycaster(origin, yz1Direction.normalize());
-          ray2 = new THREE.Raycaster(origin, yz2Direction.normalize());
+          _demo.arrows.push(arrow1);
+          _demo.arrows.push(arrow2);
+
+          _demo.scene.add(arrow1);
+          _demo.scene.add(arrow2);
+
+          ray1 = new THREE.Raycaster(origin1, setup.yz1Direction);
+          ray2 = new THREE.Raycaster(origin2, setup.yz2Direction);
+
+          ray1.num = '3';
+          ray2.num = '3';
+
           rays.push(ray1);
           rays.push(ray2);
 
       }
+    }
 
-      // create 4 rays for XYZ diagonals
-      var distance = 4 * delta;
+    function create3DDiagonals (setup) {
+
+      var i,j,
+          x,y,z,
+          arrow1, arrow2, arrow3, arrow4,
+          origin1, origin2, origin3, origin4,
+          ray1, ray2, ray3, ray4,
+          distance = 4 * cubeSeparation;
+
       x = distance;
       y = distance;
       z = distance;
+
       origin1 = new THREE.Vector3(x,y,z);
-
-      if(showArrows){
-        arrow1 = new THREE.ArrowHelper(xyz1Direction.normalize(), origin1, length, 0xFFFFFF);
-        _demo.scene.add(arrow1);
-      }
-
-      ray1 = new THREE.Raycaster(origin1, xyz1Direction.normalize);
-
       origin2 = new THREE.Vector3(-x,y,z);
-      if(showArrows){
-        arrow2 = new THREE.ArrowHelper(xyz2Direction.normalize(), origin2, length, 0xFFFFFF);
-        _demo.scene.add(arrow2);
-      }
-
       origin3 = new THREE.Vector3(x,y,-z);
-      if(showArrows){
-        arrow3 = new THREE.ArrowHelper(xyz3Direction.normalize(), origin3, length, 0xFFFFFF);
-        _demo.scene.add(arrow3);
-      }
-
       origin4 = new THREE.Vector3(-x,y,-z);
-      if(showArrows){
-        arrow4 = new THREE.ArrowHelper(xyz4Direction.normalize(), origin4, length, 0xFFFFFF);
-        _demo.scene.add(arrow4);
-      }
 
-      ray1 = new THREE.Raycaster(origin1, xyz1Direction.normalize);
-      ray2 = new THREE.Raycaster(origin2, xyz2Direction.normalize);
-      ray3 = new THREE.Raycaster(origin3, xyz3Direction.normalize);
-      ray4 = new THREE.Raycaster(origin4, xyz4Direction.normalize);
+      arrow1 = new THREE.ArrowHelper(setup.xyz1Direction, origin1, setup.length, 0xFFFFFF);
+      arrow2 = new THREE.ArrowHelper(setup.xyz2Direction, origin2, setup.length, 0xFFFFFF);
+      arrow3 = new THREE.ArrowHelper(setup.xyz3Direction, origin3, setup.length, 0xFFFFFF);
+      arrow4 = new THREE.ArrowHelper(setup.xyz4Direction, origin4, setup.length, 0xFFFFFF);
+
+      _demo.arrows.push(arrow1);
+      _demo.arrows.push(arrow2);
+      _demo.arrows.push(arrow3);
+      _demo.arrows.push(arrow4);
+
+      _demo.scene.add(arrow1);
+      _demo.scene.add(arrow2);
+      _demo.scene.add(arrow3);
+      _demo.scene.add(arrow4);
+
+      ray1 = new THREE.Raycaster(origin1, setup.xyz1Direction);
+      ray2 = new THREE.Raycaster(origin2, setup.xyz2Direction);
+      ray3 = new THREE.Raycaster(origin3, setup.xyz3Direction);
+      ray4 = new THREE.Raycaster(origin4, setup.xyz4Direction);
 
       rays.push(ray1);
       rays.push(ray2);
       rays.push(ray3);
       rays.push(ray4);
 
-      console.log('num rays: ' + rays.length);
-
     }
 
-    function listeners () {
-      document.addEventListener('click', selectCube, false);
-    }
 
     function selectCube (event) {
 
@@ -316,49 +393,77 @@
       // Casting a ray to find if there is an intersection.
       var intersected = ray.intersectObjects( _demo.collisions );
 
-      // removing previous click marker.
-      $(".clickMarkers").remove();
-
-      // appending a click marker.
-      _demo.jqContainer.append('<div class="clickMarkers" style="pointer-events:none; position: absolute; z-index: 100; left: ' + event.offsetX + 'px; top: ' + event.offsetY +'px">D</div>' );
-
       // only change the first (closest) intersected object.
       if(intersected.length > 0) {
         if(!intersected[0].object.ttt) {
 
           var color = (turn === -1) ? userColor1 : userColor2;
+
+          intersected[0].object.material.color = color;
+          intersected[0].object.ttt = (turn === -1) ? 'user1' : 'user2';
+
           // only change turn if selection legit
           turn *= -1;
 
-          intersected[0].object.material.color = color;
-          intersected[0].object.ttt = true;
+          checkForTTT();
         }
       }
-
-      checkForTTT();
     }
 
+    // loop through all the rays and look to see if all of their collisions objects show the same values.
+    //
+    //    essentially, a ray will intersect all faces in one particular direction.  3 cubes = 6 faces = 6 intersections
+    //    if all of the intersections show a 'selection' has take place, it'll check the selection types (ttt property)
     function checkForTTT(){
-      var collisions;
-      var tic = 0;
 
-      for(var i = 0; i < rays.length; i++){
+      var i,j,
+          collisions,
+          ticUser1,
+          ticUser2;
+
+      for(i = 0; i < rays.length; i++){
         collisions = rays[i].intersectObjects(_demo.collisions);
-        if(collisions.length !== 6){
-        }
-        tic = 0;
-        for(var j = 0; j < collisions.length; j++){
-          if(collisions[j].object.ttt){
-            tic++;
+        ticUser1 = 0;
+        ticUser2 = 0;
+
+        // if('num' in rays[i]) {
+        //   console.log('num: ' + rays[i].num + '  length: ' + collisions.length);
+        // } else {
+        //   console.log('length: ' + collisions.length);
+        // }
+
+        for(j = 0; j < collisions.length; j++){
+          if(collisions[j].object.ttt === 'user1'){
+            ticUser1++;
+          } else if (collisions[j].object.ttt === 'user2'){
+            ticUser2++;
           }
         }
 
-      }
-      if(tic === 6){
-        console.log("Tic-Tac-Toe");
-        alert("Tic Tac Toe");
-      }
+        if(ticUser1 === collisions.length){
+          console.log("Tic Tac Toe - User 1");
+          $('#winner').append("User 1 (black) - Winner");
+          gameOver = true;
+        }
 
+        if (ticUser2 === collisions.length){
+          console.log("Tic Tac Toe - User 2");
+          $('#winner').append("User 2 (red) - Winner");
+          gameOver = true;
+        }
+      }
+    }
+
+    // show/hide the arrows.  these represent the Ray placement
+    function toggleArrows () {
+
+      var i,
+          vis;
+
+      for(i = 0; i < _demo.arrows.length; i++){
+        _demo.arrows[i].cone.visible = (_demo.arrows[i].cone.visible) ? false : true;
+        _demo.arrows[i].line.visible = (_demo.arrows[i].line.visible) ? false : true;
+      }
     }
 
     $(document).ready(function () {

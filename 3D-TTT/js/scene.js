@@ -9,8 +9,12 @@ Demo.Scene = function (containerId) {
 
   this.jqContainer = $('#' + containerId);
   this.container = document.getElementById(containerId);
-  // an array of scene elements we're interested with regards to collisions
+
+  // an array of scene elements we're interested in colliding with
   this.collisions = [];
+
+  // arrows visualizing vectors
+  this.arrows = [];
 
   this.cameras = new Demo.Cameras(this);
   this.setup = new Demo.Scene.Setup({ context: this, cubes: 3});
