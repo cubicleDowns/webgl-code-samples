@@ -91,21 +91,26 @@ Demo.Scene.Setup.prototype = {
     this.context.scene.add(dl);
   },
 
-  /**
-   *  Create a random color
-   */
-  randomColor: function () {
-      //cleverness via Paul Irish et al.
-      return new THREE.Color().setHex('0x' + ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6));
-  },
 
   /**
    *   Change a group of meshes to random colors.
+   *  -- this function is duplicated in marquee.js
    */
   highlight: function (meshes) {
+
     for(var i = 0; i < meshes.length; i++) {
       meshes[i].mesh.material.color = this.randomColor();
     }
+  },
+
+  /**
+   *  Create a random color
+   *  -- this function is duplicated in marquee.js
+   */
+  randomColor: function () {
+      //cleverness via Paul Irish et al.  Thx Internets!
+      return new THREE.Color().setHex('0x' + ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6));
   }
+
 };
 

@@ -3,7 +3,6 @@ body {
   font-family: "Arial, Helvetica, sans-serif";
   margin: 0;
   padding: 0;
-  pointer-events: none;
 }
 
 h2 {
@@ -28,6 +27,13 @@ ul.info li {
   font-size: 10px;
 }
 
+#cache-status {
+  font-size: 25px;
+  color: red;
+  position: absolute;
+  left: 400px;
+  top: 10px;
+}
 
 #ray-intersection {
   border: 1px solid #CCC;
@@ -38,7 +44,7 @@ ul.info li {
   /* adding these values to demonstrate ray intersections anywhere in the scene */
   position: absolute;
   left: 150px;
-  top: 74px;
+  top: 120px;
   pointer-events: all;
 }
 

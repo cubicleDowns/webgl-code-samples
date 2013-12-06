@@ -1,7 +1,7 @@
 var Demo = Demo || {};
 Demo.Scene = Demo.Scene || {};
 
-Demo.Scene = function (containerId) {
+Demo.Scene = function (containerId, numcubes, marqueeBool, cacheBool) {
 
   this.scene = new THREE.Scene();
   this.projector = new THREE.Projector();
@@ -13,7 +13,16 @@ Demo.Scene = function (containerId) {
   this.collisions = [];
 
   this.cameras = new Demo.Cameras(this);
-  this.setup = new Demo.Scene.Setup({ context: this, cubes: 3});
+
+  // i'm using the same code to run multiple demos, yo.
+  if(marqueeBool){
+    this.marquee = new Demo.Marquee(this);
+  }
+  if(cacheBool){
+    this.cache = new Demo.Cache(this);
+  }
+
+  this.setup = new Demo.Scene.Setup({ context: this, cubes: numcubes});
   this.stats = null;
 
   this.rotateCamera = false;
