@@ -1,7 +1,6 @@
 var Demo = Demo || {};
-Demo.Scene = Demo.Scene || {};
 
-Demo.Scene = function (containerId, numcubes, marqueeBool, cacheBool) {
+Demo.Scene = function (containerId) {
 
   this.scene = new THREE.Scene();
   this.projector = new THREE.Projector();
@@ -10,6 +9,7 @@ Demo.Scene = function (containerId, numcubes, marqueeBool, cacheBool) {
 
   this.jqContainer = $('#' + containerId);
   this.container = document.getElementById(containerId);
+
   // an array of scene elements we're interested with regards to collisions
   this.collisions = [];
 
@@ -17,14 +17,7 @@ Demo.Scene = function (containerId, numcubes, marqueeBool, cacheBool) {
 
   this.utils = new Demo.Scene.Utils(this);
 
-  // if(marqueeBool){
-  //   this.marquee = new Demo.Marquee(this);
-  // }
-  // if(cacheBool){
-  //   this.cache = new Demo.Cache(this);
-  // }
-
-  this.setup = new Demo.Scene.Setup({ context: this, cubes: numcubes});
+  this.setup = new Demo.Scene.Setup({ context: this});
   this.stats = null;
 
   this.rotateCamera = false;
@@ -41,7 +34,7 @@ Demo.Scene.prototype = {
   init: function () {
     this.listeners();
     this.statsSetup();
-
+    this.setupScene();
   },
 
   listeners: function () {
@@ -63,6 +56,13 @@ Demo.Scene.prototype = {
     this.stats.domElement.style.position = 'absolute';
     this.stats.domElement.style.top = '0px';
     this.container.appendChild( this.stats.domElement );
+  },
+
+  setupScene: function () {
+    // creates an axes for us in the scene
+    var helper = new THREE.AxisHelper(50);
+    helper.position.set (0, 10, 0);
+    this.scene.add(helper);
   },
 
   /**

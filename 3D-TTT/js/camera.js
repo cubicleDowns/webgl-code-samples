@@ -29,11 +29,6 @@ Demo.Cameras.prototype = {
      */
     init: function () {
         this.initPerspective();
-        this.initControls();
-    },
-
-    initControls: function () {
-        this.controls = new THREE.OrbitControls( this.liveCam, document.getElementById('ray-intersection') );
     },
 
     /**

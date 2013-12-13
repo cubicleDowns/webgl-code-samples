@@ -9,8 +9,6 @@ Demo.Scene.Setup = function (params) {
 
   this.context = params.context;
 
-  this.numCubes = params.cubes;
-
   this.width = this.context.jqContainer.width();
   this.height = this.context.jqContainer.height();
 
@@ -26,7 +24,8 @@ Demo.Scene.Setup.prototype = {
    */
   init: function () {
     this.setupRenderer();
-    this.createCubes();
+    this.setupLights();
+    this.addGround();
   },
 
   /**
@@ -38,30 +37,38 @@ Demo.Scene.Setup.prototype = {
   },
 
   /**
-   *  Create cubes yo.
    *
    */
-  createCubes: function () {
+  setupLights: function () {
+    var spotLight,
+      ambientLight,
+      directionalLight;
 
-    var i,
-        mesh,
+    spotLight = new THREE.SpotLight( 0xCCCCCC);
+    spotLight.position.set(-50, 200, -50);
+    spotLight.lookAt(this.context.scene);
+    this.context.scene.add(spotLight);
+
+    ambientLight = new THREE.AmbientLight ( 0x909090 );
+    this.context.scene.add(ambientLight);
+
+    // directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 0.5);
+    // this.context.scene.add(directionalLight);
+   },
+
+   addGround: function () {
+    var geometry,
         material,
-        color,
-        cube = new THREE.CubeGeometry(25, 25, 25);
+        object;
 
-    for(i = 0; i < this.numCubes; i++) {
+    geometry = new THREE.PlaneGeometry(500, 500, 1, 1);
+    material = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, side: THREE.DoubleSide });
+    object = new THREE.Mesh(geometry, material);
 
-      material = new THREE.MeshLambertMaterial({color: this.context.utils.randomColor()});
-
-      this.mesh = new THREE.Mesh(cube, material);
-      this.mesh.position.x = Math.random() * 100 - 50;
-      this.mesh.position.y = Math.abs(Math.random() * 100 - 50);
-      this.mesh.position.z = Math.random() * 100 - 50;
-
-      this.context.collisions.push(this.mesh);
-      this.context.scene.add(this.mesh);
-    }
-  }
+    object.position.set(0, 0, 0);
+    object.rotation.set(this.context.utils.degreesToRadians(90), 0, 0);
+    this.context.scene.add(object);
+   }
 
 };
 

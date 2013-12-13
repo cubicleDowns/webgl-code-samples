@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Snowman!</title>
+<!-- All demo code is here or available on my github account under code-samples
+     https://github.com/cubicleDowns/code-samples  -->
+  <link rel="stylesheet" href="css/demo.css" type="text/css">
+
+  <script src="lib/jquery-1.9.1.min.js"></script>
+  <script src="lib/three.v63.min.js"></script>
+  <script src="lib/detector.js"></script>
+  <script src="lib/stats.min.js"></script>
+  <script src="lib/orbit-control.js"></script>
+
+  <script src="js/scene.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/setup.js"></script>
+  <script src="js/util.js"></script>
+
+</head>
+<body>
+<a href="" id="docs">THREE.js docs</a>
+<div id="snowman">http://threejs.org/docs/</div>
+</body>
+
+  <script>
+
+    // GLOBAL anchor, "demo" for requestAnimationFrame browser hooks
+    var demo;
+
+    $(document).ready(function () {
+
+      function init() {
+        demo = new Demo.Scene("snowman");
+        demo.animate();
+        winterIsComing();
+      }
+
+      function winterIsComing() {
+
+
+        var arms = demo.utils.snowmanArm();
+        arms.position.y -= 10;
+        demo.scene.add(arms);
+
+        var arms2 = arms.clone();
+        arms2.position.y -= 10;
+        demo.scene.add(arms2);
+
+        var arms3 = arms.clone();
+        arms3.position.y -= 10;
+        demo.scene.add(arms3);
+
+
+        var body = demo.utils.snowmanBody();
+        var head = demo.utils.snowmanArm();
+
+        var child = new THREE.Object3D();
+
+        child.add(head);
+        child.add(body);
+
+        var parent = child.clone();
+        parent.position.z = 100;
+
+        var otherkid = child.clone();
+
+        demo.scene.add(child);
+        demo.scene.add(parent);
+        otherkid.position.z = 100;
+        otherkid.position.x = 100;
+        demo.scene.add(otherkid);
+        /** TODO
+          1 - create your geometry and associated textures
+              -  3 spheres, 2 eyes, 1 carrot nose ...
+          2 - move each piece into the scene position using THREE.js Object3D methods
+        */
+
+        // carrot nose
+        // http://threejs.org/docs/#Reference/Extras.Geometries/CylinderGeometry
+
+        // move stuff around, use the Object3D methods
+        // http://threejs.org/docs/#Reference/Core/Object3D
+
+      }
+
+      init();
+
+    });
+
+  </script>
+</html>
+

@@ -1,4 +1,5 @@
 var Demo = Demo || {};
+Demo = Demo || {};
 
 /**
  * @namespace  Camera initialization
@@ -40,9 +41,9 @@ Demo.Cameras.prototype = {
      */
     initPerspective: function () {
         this.liveCam = new THREE.PerspectiveCamera(this.FOV, this.ASPECT_RATIO, this.NEAR_PLANE, this.FAR_PLANE);
-        this.liveCam.position.x = 300;
-        this.liveCam.position.y = 300;
-        this.liveCam.position.z = 300;
+        this.liveCam.position.x = 0;
+        this.liveCam.position.y = 150;
+        this.liveCam.position.z = -300;
         this.liveCam.lookAt(this.context.scene);
     }
 

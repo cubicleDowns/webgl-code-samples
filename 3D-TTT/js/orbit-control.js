@@ -134,6 +134,10 @@ THREE.OrbitControls = function ( object, domElement ) {
 
   this.update = function () {
 
+    if(!_demo.rotateCamera){
+      return;
+    }
+
     var position = this.object.position;
     var offset = position.clone().sub( this.center );
 
