@@ -5,9 +5,11 @@ Demo.Cameras = Demo.Cameras || {};
  * @namespace  Camera initialization
  * @class Creates cameras for the scene.
  */
-Demo.Cameras = function (context) {
+Demo.Cameras = function (context, camMult) {
 
     this.context = context;
+
+    this.cameraMultiplier = camMult;
 
     this.liveCam = null;
     this.FOV = 70;
@@ -36,8 +38,7 @@ Demo.Cameras.prototype = {
      */
     initPerspective: function () {
         this.liveCam = new THREE.PerspectiveCamera(this.FOV, this.ASPECT_RATIO, this.NEAR_PLANE, this.FAR_PLANE);
-        this.liveCam.position.z = 200;
-
+        this.liveCam.position.z = this.cameraMultiplier * 60;
     }
 
 };

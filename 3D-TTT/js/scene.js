@@ -1,7 +1,7 @@
 var Demo = Demo || {};
 Demo.Scene = Demo.Scene || {};
 
-Demo.Scene = function (containerId) {
+Demo.Scene = function (containerId, dims) {
 
   this.scene = new THREE.Scene();
   this.projector = new THREE.Projector();
@@ -16,9 +16,11 @@ Demo.Scene = function (containerId) {
   // arrows visualizing vectors
   this.arrows = [];
 
-  this.cameras = new Demo.Cameras(this);
+  this.cameras = new Demo.Cameras(this, dims);
   this.setup = new Demo.Scene.Setup({ context: this, cubes: 3});
   this.stats = null;
+
+  this.players = [];
 
   this.rotateCamera = false;
 
@@ -33,7 +35,7 @@ Demo.Scene.prototype = {
 
   init: function () {
 
-    this.renderer.setClearColor( 0xEEEEEE, 0.2 );
+    // this.renderer.setClearColor( 0xEEEEEE, 0.2 );
 
     this.listeners();
     // this.statsSetup();

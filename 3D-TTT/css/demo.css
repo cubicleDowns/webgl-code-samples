@@ -1,8 +1,12 @@
-body {
-  font-size: 10px;
+* {
   font-family: "Arial, Helvetica, sans-serif";
   margin: 0;
   padding: 0;
+}
+
+body {
+  overflow: hidden;
+  background-color: #000;
 }
 
 h2 {
@@ -17,8 +21,6 @@ ul.info{
   bottom: 4px;
   left: 4px;
   list-style: none;
-  margin: 0;
-  padding: 0;
 }
 
 ul.info li {
@@ -32,8 +34,8 @@ ul.menu {
   top: 4px;
   left: 4px;
   list-style: none;
-  margin: 0;
-  padding: 0;
+  z-index: 20;
+  color: #FFF;
 }
 
 ul.menu li {
@@ -44,58 +46,70 @@ ul.menu li {
   width: 100%;
 }
 
-#what {
-  position: absolute;
-  left: 5px;
-  top: 200px;
-  width: 300px;
-  color: #333;
-  z-index: 20;
-  font-size: 14px;
-  font-weight: bolder;
+.select {
+  color: #660000;
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: uppercase;
 }
 
+.info {
+  color: #666;
+font-size: 14px;
+}
+
+#what {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 200px;
+  padding: 3px;
+  width: 300px;
+  color: #FFF;
+  font-size: 16px;
+  background-color: #CCC;
+  border: solid 1px #FF0000;
+  z-index: 21;
+}
+
+#what p {
+  z-index: 22;
+}
+
+#what h1 {
+  color: #333333;
+}
+
+#gridDimensions {
+  width: 30px;
+}
+
+#whos-turn {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  width: 140px;
+  height: 50px;
+  font-size: 24px;
+  z-index: 20;
+  text-align: center;
+  text-transform: uppercase;
+  color: #FFF;
+}
 
 #winner {
   font-size: 25px;
   color: red;
   position: absolute;
-  left: 300px;
-  top: 10px;
+  left: 50%;
+  bottom: 10px;
+  z-index: 20;
 }
 
 #ray-intersection {
-  border: 1px solid #CCC;
   z-index: 10;
-  width: 600px;
-  height: 600px;
-  /* OFFSET CHANGE */
-  /* adding these values to demonstrate ray intersections anywhere in the scene */
+  width: 100%;
+  height: 100%;
   position: absolute;
-  right: 100px;
-  top: 100px;
-  pointer-events: all;
-  background-color: #CCCCCC;
-}
-
-#select-marquee {
-  position:absolute;
-  /* initialize it offscreen */
-  top: -2px;
-  left: -2px;
-  z-index: 50;
-  height: 0px;
-  width: 10px;
-  background-color: rgba(208, 255, 242, 0.5);
-  border: dotted 1px #9a9a9a;
-  margin: 0;
-  padding: 0;
-  pointer-events:none;
-}
-
-.clickMarkers {
-  pointer-events:none;
-  position: absolute;
-  z-index: 100;
-  color: white;
+  right: 0;
+  top: 0;
 }

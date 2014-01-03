@@ -3,7 +3,9 @@
 <head>
   <title>3D Tic-Tac-Toe</title>
   <!-- All demo code is here or available on my github account under code-samples
-       https://github.com/cubicleDowns/webgl-code-samples  -->
+       https://github.com/cubicleDowns/webgl-code-samples
+       You can reach me at 'cbcldowns (at) gmail.com'
+  -->
 
   <link rel="stylesheet" href="css/demo.css" type="text/css">
 
@@ -13,21 +15,29 @@
   <script src="js/scene.js"></script>
   <script src="js/camera.js"></script>
   <script src="js/setup.js"></script>
-
+  <script src="js/util.js"></script>
+  <script src="js/user.js"></script>
   <script src="js/ttt.js"></script>
 
 </head>
 <body>
+<div id="whos-turn">
+  Your turn
+</div>
 <div id="winner"></div>
-<div id="ray-intersection"></div>
 <div id="what">
-<p>This Tic-Tac-Toe demo uses THREE.js rays and ray casters to determine if either user has won.</p>
-<p>After each click, it projects a ray for each possible win combination and if it finds sequential intersections with clicks from the sameuser, a winner is declared.</p>
-<p>Add your selection code logic to this file.  Currently you're playing against a random number generator.</p>
-<p><span style="color: #990000">User 1</span> | <span style="color: #000000">User 2</span>
+  <h1>Ready Player h1?</h1>
+  <hr>
+  <p class="select">Game Dimensions: <input id="gridDimensions" type="number" name="quantity" min="3" value="3" step="1"></p>
+  <hr>
+  <p class="info">This demo uses THREE.js rays and ray casters to determin win conditions.</p>
+  <p class="info">After each click, it projects a ray through each possible win combination and if it finds sequential selections from the same user, a winner is declared.</p>
+  <hr>
+  <p><a href="#" id="numCubes">Start Game</a></p>
 </div>
 <ul class="menu">
-  <li style="font-size: 25px; color: #660000">2 Player - 3D Tic Tac Toe</li>
+  <li></li>
+  <li></li>
   <li><a id="toggle-arrows">Toggle Rays</a></li>
   <li><a id="toggle-rotation">Toggle Rotation</a></li>
 </ul>
@@ -46,8 +56,6 @@
      *  tttGrid
      */
     function yourTurn(tttGrid){
-      debugger;
-
 
       var num = Math.floor((Math.random()*27));
 
