@@ -25,10 +25,8 @@ Demo.Scene.Setup.prototype = {
    * Initialize all of the THREE.JS framework and additional code.
    */
   init: function () {
-
     this.setupRenderer();
     this.lights();
-    this.createGeometry();
   },
 
   /**
@@ -44,6 +42,9 @@ Demo.Scene.Setup.prototype = {
    */
   createGeometry: function () {
     this.context.scene.add(new THREE.AxisHelper(10));
+
+    this.createCubes();
+    this.createRays();
   },
 
   /**
@@ -114,7 +115,6 @@ Demo.Scene.Setup.prototype = {
         xyz4Direction: xyz4Direction = new THREE.Vector3(1,-1,1).normalize(),
         length: 20
     };
-
 
     // should be gameDimensions^3 of these guys.
     this.create2DVectors(setup);

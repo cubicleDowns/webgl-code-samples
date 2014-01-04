@@ -1,13 +1,13 @@
 var Demo = Demo || {};
 Demo.Manager = Demo.Manager || {};
 
-Demo.Manager.User = function () {
+Demo.Game.UserManager = function () {
 
   this.users = [];
 
 };
 
-Demo.Manager.User.prototype = {
+Demo.Game.UserManager.prototype = {
 
   takeTurn: function () {
 

@@ -1,11 +1,11 @@
 var Demo = Demo || {};
-Demo.Cameras = Demo.Cameras || {};
+Demo.Scene = Demo.Scene || {};
 
 /**
  * @namespace  Camera initialization
  * @class Creates cameras for the scene.
  */
-Demo.Cameras = function (context, camMult) {
+Demo.Scene.Cameras = function (context, camMult) {
 
     this.context = context;
 
@@ -24,7 +24,7 @@ Demo.Cameras = function (context, camMult) {
     this.init();
 };
 
-Demo.Cameras.prototype = {
+Demo.Scene.Cameras.prototype = {
 
     /**
      * Initialize the camera object and create default cameras.

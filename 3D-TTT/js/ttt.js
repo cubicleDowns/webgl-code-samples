@@ -1,15 +1,10 @@
 var Demo = Demo || {};
 
-Demo.Game = function (params) {
-
-  this.game;
+Demo = function (params) {
 
   // scene graph and other stuff.
-  this.demo;
 
-  this._gameDims = 3;
-  this._cubeSeperation = 25;
-  this._cubeDimension = 10;
+
   this._turn = 0;
   this._rays = [];
 
@@ -19,7 +14,7 @@ Demo.Game = function (params) {
 
   this.gameOver = false;
 
-  this._userManager = [];
+  this.userManager = [];
 
   this.userColor1 = new THREE.Color(0xFF434C);
   this.userColor2 = new THREE.Color(0x00CC00);
@@ -29,7 +24,7 @@ Demo.Game = function (params) {
 
 };
 
-Demo.Game.prototype = {
+Demo.prototype = {
 
   init: function () {
     this.userManager.push( new Demo.Player({ name: "Josh", cssColor: "#0000FF", hexColor: 0x0000FF, isComputer: true}) );
@@ -81,7 +76,6 @@ Demo.Game.prototype = {
 
     });
   },
-
 
   selectCube: function (event){
 

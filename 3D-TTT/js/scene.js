@@ -16,8 +16,8 @@ Demo.Scene = function (containerId, dims) {
   // arrows visualizing vectors
   this.arrows = [];
 
-  this.cameras = new Demo.Cameras(this, dims);
-  this.setup = new Demo.Scene.Setup({ context: this, cubes: 3});
+  this.cameras = new Demo.Scene.Cameras(this, dims);
+  this.setup;
   this.stats = null;
 
   this.players = [];
@@ -34,6 +34,8 @@ Demo.Scene = function (containerId, dims) {
 Demo.Scene.prototype = {
 
   init: function () {
+
+    this.setup = new Demo.Scene.Setup({ context: this, cubes: 3});
 
     // this.renderer.setClearColor( 0xEEEEEE, 0.2 );
 
