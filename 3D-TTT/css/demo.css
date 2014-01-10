@@ -9,9 +9,9 @@ body {
   background-color: #000;
 }
 
-h2 {
+h3 {
   position: absolute;
-  top: 10px;
+  bottom: 10px;
   right: 10px;
   text-transform: uppercase;
 }
@@ -55,7 +55,8 @@ ul.menu li {
 
 .info {
   color: #666;
-font-size: 14px;
+  font-size: 14px;
+  padding: 2px;
 }
 
 #what {
@@ -85,7 +86,7 @@ font-size: 14px;
 
 #whos-turn {
   position: absolute;
-  left: 10px;
+  right: 10px;
   top: 10px;
   width: 140px;
   height: 50px;

@@ -3,32 +3,24 @@ var Demo = Demo || {};
 Demo = function (params) {
 
   // scene graph and other stuff.
+  this.turn = 1;
 
-
-  this._turn = 0;
-  this._rays = [];
-
-  this._collisions = [];
-
-  this._rotateCamera = false;
+  this.scene = null;
 
   this.gameOver = false;
 
-  this.userManager = [];
+  this._userDims = 0;
 
-  this.userColor1 = new THREE.Color(0xFF434C);
-  this.userColor2 = new THREE.Color(0x00CC00);
-  this.cubeColor1 = new THREE.Color(0x6ACEEB);
-  this.cubeColor2 = new THREE.Color(0xFFFFFF);
-  this.cubeColor3 = new THREE.Color(0xCCCCCC);
+  this.userManager = [];
 
 };
 
 Demo.prototype = {
 
   init: function () {
-    this.userManager.push( new Demo.Player({ name: "Josh", cssColor: "#0000FF", hexColor: 0x0000FF, isComputer: true}) );
-    this.userManager.push( new Demo.Player({ name: "User", cssColor: "#FF0000", hexColor: 0xFF0000, isComputer: true}) );
+
+    // this.userManager.push( new Demo.Player({ name: "Josh", cssColor: "#0000FF", hexColor: 0x0000FF, isComputer: true}) );
+    // this.userManager.push( new Demo.Player({ name: "User", cssColor: "#FF0000", hexColor: 0xFF0000, isComputer: true}) );
 
     $('#jqv').text($.fn.jquery);
     $('#tjsv').text(THREE.REVISION);
@@ -41,11 +33,6 @@ Demo.prototype = {
 
     var me = this;
 
-    $("#ray-intersection").on("click", function (e) {
-      if(!this.gameOver){
-        me.selectCube(e);
-      }
-    });
 
     $("#toggle-arrows").on("click", function () {
       me.toggleArrows();
@@ -60,89 +47,104 @@ Demo.prototype = {
       $("body").append('<div id="ray-intersection"></div>');
       $("#what").fadeOut();
 
-      me._gameDims = $('#gridDimensions').val();
+      var gameDims = parseInt($('#gridDimensions').val(), 10);
+      me._userDims = gameDims;
 
-      me.demo = new Demo.Scene("ray-intersection", me._gameDims);
-      me.rotateCamera = true;
+      me.scene = new Demo.Scene("ray-intersection", gameDims);
 
-      me.displacement = (me.cubeSeparation * (me._gameDims -1))/2;
+      me.rayListener();
 
-      me.createCubes(displacement);
-      me.createRays(displacement);
-
-      // start the animation
-      // this also does all of the setup.  i've encapsulated all of this work for brevity.
-      me.animate();
+      me.scene.animate();
 
     });
   },
 
+  rayListener: function () {
+
+    var me = this;
+
+    $("#ray-intersection").on("click", function (e) {
+      if(!me.gameOver){
+        me.selectCube(e);
+      }
+    });
+
+  },
+
   selectCube: function (event){
+
+    var mouse,
+      leftOffset,
+      topOffset,
+      vector,
+      ray,
+      status,
+      intersected;
 
     event.preventDefault();
 
-    var mouse = {};
+    mouse = {};
 
     // since this isn't a full screen app, lets use the dimensions of the container div.
     // OFFSET change.  Now I'll adjust the offset of the canvas element from the click.
-    var leftOffset = _demo.jqContainer.offset().left;
-    var topOffset = _demo.jqContainer.offset().top;
+    leftOffset = this.scene.jqContainer.offset().left;
+    topOffset = this.scene.jqContainer.offset().top;
 
-    mouse.x = ((event.clientX - leftOffset) / _demo.jqContainer.width()) * 2 -1;
-    mouse.y = -((event.clientY - topOffset) / _demo.jqContainer.height()) * 2 + 1;
+    mouse.x = ((event.clientX - leftOffset) / this.scene.jqContainer.width()) * 2 -1;
+    mouse.y = -((event.clientY - topOffset) / this.scene.jqContainer.height()) * 2 + 1;
 
-    var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
-    _demo.projector.unprojectVector(vector, _demo.cameras.liveCam);
+    vector = new THREE.Vector3(mouse.x, mouse.y, 1);
+    this.scene.projector.unprojectVector(vector, this.scene.cameras.liveCam);
 
-    var ray = new THREE.Raycaster(_demo.cameras.liveCam.position, vector.sub(_demo.cameras.liveCam.position).normalize());
+    ray = new THREE.Raycaster(this.scene.cameras.liveCam.position, vector.sub(this.scene.cameras.liveCam.position).normalize());
 
     // Casting a ray to find if there is an intersection.
-    var intersected = ray.intersectObjects( _demo.collisions );
+    intersected = ray.intersectObjects( this.scene.collisions );
 
     // only change the first (closest) intersected object.
     if(intersected.length > 0) {
       console.log('mesh num: ', intersected[0].object.cubeNum);
-      // if(!intersected[0].object.ttt && turn === 1) {
-      if(intersected[0].object.ttt === undefined && turn === 1) {
+      if(intersected[0].object.ttt === null && this.turn === 1) {
 
-
-        intersected[0].object.material.color = userColor1;
+        intersected[0].object.material.color = this.scene.setup.userColor1;
         intersected[0].object.ttt = 'user1';
 
         // only change turn if selection legit
-        turn *= -1;
+        this.turn *= -1;
 
-        if(!gameOver) {
-          checkForTTT();
-          // after a short pause, execute user code.
-          window.setTimeout(function(){
-            userTurn();
-          }, 500);
+        if(!this.gameOver) {
+          status = this.checkForTTT();
+
+          if(!status){
+            // after a short pause, execute user code.
+            window.setTimeout(function(){
+              demo.userTurn();
+            }, 500);
+          }
         }
       }
     }
   },
 
   userTurn: function () {
-    var gridStatus = getGridStatus(),
+    var gridStatus = this.getGridStatus(),
+      dimsMax = this._userDims * this._userDims * this._userDims;
       selection = yourTurn(gridStatus);
 
-    getGridStatus();
-
-    if(selection >= 0 && selection <= 26){
-      for(var i = 0; i < _demo.collisions.length; i++){
-        var cube = _demo.collisions[i];
-        if(cube.cubeNum === selection && cube.ttt === undefined) {
+    if(selection >= 0 && selection < dimsMax){
+      for(var i = 0; i < this.scene.collisions.length; i++){
+        var cube = this.scene.collisions[i];
+        if(cube.cubeNum === selection && cube.ttt === null) {
             console.log('computer selected cube ' + selection);
-            cube.material.color = userColor2;
-            cube.ttt = 'user2';
-            turn *= -1;
-            checkForTTT();
+            cube.material.color = this.scene.setup.userColor2;
+            cube.ttt = 'computer';
+            this.turn *= -1;
+            this.checkForTTT();
             return;
         }
       }
     } else {
-      console.log("selection is not within 0-26");
+      console.log("selection is not within 0-" + dimsMax );
     }
 
     // select again.
@@ -153,8 +155,8 @@ Demo.prototype = {
     var i,
         gridInfo = [];
 
-    for(i = 0; i < _demo.collisions.length; i++){
-       cube = _demo.collisions[i];
+    for(i = 0; i < this.scene.collisions.length; i++){
+       cube = this.scene.collisions[i];
 
        var cubeInfo = {
          num: cube.cubeNum,
@@ -184,15 +186,15 @@ Demo.prototype = {
         ticUser1,
         ticUser2;
 
-    for(i = 0; i < rays.length; i++){
-      collisions = rays[i].intersectObjects(_demo.collisions);
+    for(i = 0; i < this.scene.rays.length; i++){
+      collisions = this.scene.rays[i].intersectObjects(this.scene.collisions);
       ticUser1 = 0;
       ticUser2 = 0;
 
       for(j = 0; j < collisions.length; j++){
-        if(collisions[j].object.ttt === 'user1'){
+        if(collisions[j].object.ttt === 'user'){
           ticUser1++;
-        } else if (collisions[j].object.ttt === 'user2'){
+        } else if (this.scene.collisions[j].ttt === 'computer'){
           ticUser2++;
         }
       }
@@ -202,35 +204,129 @@ Demo.prototype = {
         $('#winner').append("Tic Tac Toe - User 1 (red) is Winner!");
         alert("Tic Tac Toe - User 1 (red) is Winner!");
 
-        gameOver = true;
+        this.gameOver = true;
       }
 
       if (ticUser2 === collisions.length){
         console.log("Tic Tac Toe - User 2 (black) - Winner");
         $('#winner').append("Tic Tac Toe - User 2 (black) - Winner");
-        gameOver = true;
+        this.gameOver = true;
       }
     }
+
+    return this.gameOver;
   },
+
+  nextComputerTurn: function () {
+
+    var uhoh,
+      bestSelection;
+
+    uhoh = this.blockOpponentOrWin();
+
+    if(!uhoh) {
+      bestSelection = this.findBestSelection();
+    }
+
+    this.makeComputerSelection(bestSelection);
+  },
+
+
 
   toggleArrows: function () {
     var i,
         vis;
 
-    for(i = 0; i < _demo.arrows.length; i++){
-      _demo.arrows[i].cone.visible = (_demo.arrows[i].cone.visible) ? false : true;
-      _demo.arrows[i].line.visible = (_demo.arrows[i].line.visible) ? false : true;
+    for(i = 0; i < this.scene.arrows.length; i++){
+      this.scene.arrows[i].cone.visible = (this.scene.arrows[i].cone.visible) ? false : true;
+      this.scene.arrows[i].line.visible = (this.scene.arrows[i].line.visible) ? false : true;
     }
   },
 
-  blockOpponent: function () {
+  // looks for rays intersections sets where a single cube has not been selected.
+  blockOpponentOrWin: function () {
 
+    var i,j,
+        lossSlots = [],
+        winSlots = [],
+        collisions,
+        personUser,
+        computerUser;
+
+    for(i = 0; i < this.scene.rays.length; i++){
+      collisions = this.scene.rays[i].intersectObjects(this.scene.collisions);
+      personUser = 0;
+      computerUser = 0;
+
+      for(j = 0; j < collisions.length; j++){
+        if(collisions[j].object.ttt === 'user'){
+          personUser++;
+        } else if (this.scene.collisions[j].ttt === 'computer'){
+          computerUser++;
+        }
+      }
+
+      // push the positions that have N-1 selections from the human user already
+      if(personUser === (collisions.length - 2)){
+        lossSlots.push(collisions[j].object.num);
+      }
+
+      // push the positions that have N-1 selections from the computer user already
+      // these are winning selections
+      if (computerUser === (collisions.length - 2)){
+        winSlots.push(collisions[j].object.num);
+      }
+    }
+
+    // return win slots first.
+    // return the loss slots second.
+    // else, return false as there aren't any win or loss selection options.
+    if(winSlots.length > 0){
+      return winSlots;
+    } else if(blockSlots.length > 0) {
+      return blockSlots;
+    } else {
+      return false;
+    }
   },
 
-  // looks for any ray with TWO of your own spots already selected
-  // looks for any ray with
-  selectBestLocation: function () {
+  setupWeightObject: function () {
+    var i,
+      weights = {},
+      maxDims = this.userDims * this.userDims * this.userDims;
 
+    for(var i = 0; i < maxDims; i++){
+      weights[i] = {computer: 0, user: 0};
+    }
   },
+
+  // finds the best selection location for the computer
+  findBestSelection: function () {
+    var i,j,
+        collisions,
+        ticUser1,
+        ticUser2,
+        weighting;
+
+    weighting = this.setupWeightObject();
+
+    for(i = 0; i < this.scene.rays.length; i++){
+      collisions = this.scene.rays[i].intersectObjects(this.scene.collisions);
+
+      for(j = 0; j < collisions.length; j++){
+        if(collisions[j].object.ttt === 'user'){
+          weighting[collisions[j].object.num].user++;
+        } else if (this.scene.collisions[j].ttt === 'computer'){
+          weighting[collisions[j].object.num].computer++;
+        }
+      }
+    }
+
+    return weighting;
+  },
+
+  makeComputerSelection: function () {
+
+  }
 
 };

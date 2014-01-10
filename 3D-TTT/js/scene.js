@@ -1,5 +1,4 @@
 var Demo = Demo || {};
-Demo.Scene = Demo.Scene || {};
 
 Demo.Scene = function (containerId, dims) {
 
@@ -13,32 +12,32 @@ Demo.Scene = function (containerId, dims) {
   // an array of scene elements we're interested in colliding with
   this.collisions = [];
 
+  // rays for casting.
+  this.rays = [];
+
   // arrows visualizing vectors
   this.arrows = [];
 
   this.cameras = new Demo.Scene.Cameras(this, dims);
-  this.setup;
+  this.setup = null;
   this.stats = null;
 
   this.players = [];
 
-  this.rotateCamera = false;
+  this.rotateCamera = true;
 
   this.theta = 0;
   this.radius = 100;
 
-  this.init();
+  this.init(dims);
 
 };
 
 Demo.Scene.prototype = {
 
-  init: function () {
+  init: function (dims) {
 
-    this.setup = new Demo.Scene.Setup({ context: this, cubes: 3});
-
-    // this.renderer.setClearColor( 0xEEEEEE, 0.2 );
-
+    this.setup = new Demo.Scene.Setup({ context: this, cubes: dims});
     this.listeners();
     // this.statsSetup();
   },
@@ -67,9 +66,8 @@ Demo.Scene.prototype = {
    */
   animate: function () {
     // NOTE: using the global variable "demo" instead of "this".
-      requestAnimationFrame(_demo.animate);
-      _demo.render();
-
+      requestAnimationFrame(demo.scene.animate);
+      demo.scene.render();
   },
 
   /**
@@ -87,6 +85,6 @@ Demo.Scene.prototype = {
     }
 
     // NOTE: using the global variable "demo" instead of "this".
-    this.renderer.render(this.scene, _demo.cameras.liveCam);
+    this.renderer.render(this.scene, demo.scene.cameras.liveCam);
   }
 };

@@ -1,7 +1,6 @@
 var Demo = Demo || {};
 Demo.Scene = Demo.Scene || {};
 
-
 /**
  * @class Scene setup.  Most initialization of geometry and managers happen here.
  */
@@ -9,12 +8,23 @@ Demo.Scene.Setup = function (params) {
 
   this.context = params.context;
 
-  this.numCubes = params.cubes || 1;
+  this.gameDimensions = params.cubes;
 
   this.width = this.context.jqContainer.width();
   this.height = this.context.jqContainer.height();
 
+  this.cubeDim = 10;
+  this.cubeSeparation = 25;
+
+  this.displacement = (this.cubeSeparation * (this.gameDimensions - 1))/2;
+
   this.mesh = null;
+
+  this.userColor1 = new THREE.Color(0xFF434C);
+  this.userColor2 = new THREE.Color(0x00CC00);
+  this.cubeColor1 = new THREE.Color(0x6ACEEB);
+  this.cubeColor2 = new THREE.Color(0xFFFFFF);
+  this.cubeColor3 = new THREE.Color(0xCCCCCC);
 
   this.init();
 };
@@ -27,6 +37,7 @@ Demo.Scene.Setup.prototype = {
   init: function () {
     this.setupRenderer();
     this.lights();
+    this.createGeometry();
   },
 
   /**
@@ -42,7 +53,6 @@ Demo.Scene.Setup.prototype = {
    */
   createGeometry: function () {
     this.context.scene.add(new THREE.AxisHelper(10));
-
     this.createCubes();
     this.createRays();
   },
@@ -80,19 +90,21 @@ Demo.Scene.Setup.prototype = {
       cubeGroup = new THREE.Object3D();
 
     // this approach should work for any dimension tic-tac-toe setup.  e.g. 4x4x4
-    for(i = 0; i < gameDimensions; i++){
-      for(j = 0; j < gameDimensions; j++){
-        for(k = 0; k < gameDimensions; k++){
+    for(i = 0; i < this.gameDimensions; i++){
+      for(j = 0; j < this.gameDimensions; j++){
+        for(k = 0; k < this.gameDimensions; k++){
 
           var mesh = new THREE.Mesh(geo.clone(), materialOutside.clone());
           mesh.cubeNum = num;
-          mesh.position = new THREE.Vector3((i)*cubeSeparation - this.displacement, (j)*cubeSeparation - this.displacement, (k)*cubeSeparation - this.displacement);
+          mesh.position = new THREE.Vector3((i)*this.cubeSeparation - this.displacement, (j)*this.cubeSeparation - this.displacement, (k)*this.cubeSeparation - this.displacement);
 
+          // this is the signifier for the Tic-Tac-Toe choice.
+          mesh.ttt = null;
           num++;
 
           // instead of using scene.children, I create an array for ray collisions.
-          this.collisions.push(mesh);
-          this.scene.add(mesh);
+          this.context.collisions.push(mesh);
+          this.context.scene.add(mesh);
         }
       }
     }
@@ -116,7 +128,7 @@ Demo.Scene.Setup.prototype = {
         length: 20
     };
 
-    // should be gameDimensions^3 of these guys.
+    // should be this.gameDimensions^3 of these guys.
     this.create2DVectors(setup);
 
     // should be 18 of these guys  (for a 3x3x3)
@@ -134,60 +146,60 @@ Demo.Scene.Setup.prototype = {
         ray;
 
     // create rays looking down X
-    for(i = 0; i < gameDimensions; i++){
-      for(j = 0; j < gameDimensions; j++){
+    for(i = 0; i < this.gameDimensions; i++){
+      for(j = 0; j < this.gameDimensions; j++){
 
-        x = (gameDimensions) * cubeSeparation;
-        y = i * cubeSeparation - displacement;
-        z = j * cubeSeparation - displacement;
+        x = (this.gameDimensions) * this.cubeSeparation;
+        y = i * this.cubeSeparation - this.displacement;
+        z = j * this.cubeSeparation - this.displacement;
 
         origin = new THREE.Vector3(x,y,z);
         arrow = new THREE.ArrowHelper(setup.xDirection, origin, setup.length, 0xFF0000);
 
-        _demo.scene.add(arrow);
-        _demo.arrows.push(arrow);
+        this.context.scene.add(arrow);
+        this.context.arrows.push(arrow);
 
         ray = new THREE.Raycaster(origin, setup.xDirection);
-        rays.push(ray);
+        this.context.rays.push(ray);
       }
     }
 
     // create rays looking down Y
-    for(i = 0; i < gameDimensions; i++){
-      for(j = 0; j < gameDimensions; j++){
+    for(i = 0; i < this.gameDimensions; i++){
+      for(j = 0; j < this.gameDimensions; j++){
 
-        y = (gameDimensions + 1) * cubeSeparation;
-        x = (i * cubeSeparation) - displacement;
-        z = (j * cubeSeparation) - displacement;
+        y = (this.gameDimensions + 1) * this.cubeSeparation;
+        x = (i * this.cubeSeparation) - this.displacement;
+        z = (j * this.cubeSeparation) - this.displacement;
 
         origin = new THREE.Vector3(x,y,z);
         arrow = new THREE.ArrowHelper(setup.yDirection, origin, setup.length, 0x00FF00);
 
-        _demo.scene.add(arrow);
-        _demo.arrows.push(arrow);
+        this.context.scene.add(arrow);
+        this.context.arrows.push(arrow);
 
         ray = new THREE.Raycaster(origin, setup.yDirection);
-        rays.push(ray);
+        this.context.rays.push(ray);
 
       }
     }
 
     // create rays looking down Z
-    for(i = 0; i < gameDimensions; i++){
-      for(j = 0; j < gameDimensions; j++){
+    for(i = 0; i < this.gameDimensions; i++){
+      for(j = 0; j < this.gameDimensions; j++){
 
-        z = (gameDimensions + 1) * cubeSeparation;
-        y = (i * cubeSeparation) - displacement;
-        x = (j * cubeSeparation) - displacement;
+        z = (this.gameDimensions + 1) * this.cubeSeparation;
+        y = (i * this.cubeSeparation) - this.displacement;
+        x = (j * this.cubeSeparation) - this.displacement;
 
         origin = new THREE.Vector3(x,y,z);
         arrow = new THREE.ArrowHelper(setup.zDirection, origin, setup.length, 0x0000FF);
 
-        _demo.scene.add(arrow);
-        _demo.arrows.push(arrow);
+        this.context.scene.add(arrow);
+        this.context.arrows.push(arrow);
 
         ray = new THREE.Raycaster(origin, setup.zDirection);
-        rays.push(ray);
+        this.context.rays.push(ray);
       }
     }
   },
@@ -203,11 +215,11 @@ Demo.Scene.Setup.prototype = {
         ray2;
 
     // create rays for XY diagonals
-    for(i = 0; i < gameDimensions; i++){
+    for(i = 0; i < this.gameDimensions; i++){
 
-        x = (gameDimensions + 1) * cubeSeparation;
-        y = (gameDimensions + 1) * cubeSeparation;
-        z = (i * cubeSeparation) - displacement;
+        x = (this.gameDimensions + 1) * this.cubeSeparation;
+        y = (this.gameDimensions + 1) * this.cubeSeparation;
+        z = (i * this.cubeSeparation) - this.displacement;
 
         origin1 = new THREE.Vector3(x,y,z);
         origin2 = new THREE.Vector3(x,-y,z);
@@ -215,25 +227,25 @@ Demo.Scene.Setup.prototype = {
         arrow1 = new THREE.ArrowHelper(setup.xy1Direction, origin1, setup.length, 0xCC0000);
         arrow2 = new THREE.ArrowHelper(setup.xy2Direction, origin2, setup.length, 0xCC0000);
 
-        _demo.scene.add(arrow1);
-        _demo.scene.add(arrow2);
+        this.context.scene.add(arrow1);
+        this.context.scene.add(arrow2);
 
-        _demo.arrows.push(arrow1);
-        _demo.arrows.push(arrow2);
+        this.context.arrows.push(arrow1);
+        this.context.arrows.push(arrow2);
 
         ray1 = new THREE.Raycaster(origin1, setup.xy1Direction);
         ray2 = new THREE.Raycaster(origin2, setup.xy2Direction);
 
-        rays.push(ray1);
-        rays.push(ray2);
+        this.context.rays.push(ray1);
+        this.context.rays.push(ray2);
     }
 
     // create rays for XZ diagonals
-    for(i = 0; i < gameDimensions; i++){
+    for(i = 0; i < this.gameDimensions; i++){
 
-        x = (gameDimensions + 1) * cubeSeparation;
-        y = (i * cubeSeparation) - displacement;
-        z = (gameDimensions + 1) * cubeSeparation;
+        x = (this.gameDimensions + 1) * this.cubeSeparation;
+        y = (i * this.cubeSeparation) - this.displacement;
+        z = (this.gameDimensions + 1) * this.cubeSeparation;
 
         origin1 = new THREE.Vector3(x,y,z);
         origin2 = new THREE.Vector3(x,y,-z);
@@ -241,25 +253,25 @@ Demo.Scene.Setup.prototype = {
         arrow1 = new THREE.ArrowHelper(setup.xz1Direction, origin1, setup.length, 0x00CC00);
         arrow2 = new THREE.ArrowHelper(setup.xz2Direction, origin2, setup.length, 0x00CC00);
 
-        _demo.scene.add(arrow1);
-        _demo.scene.add(arrow2);
+        this.context.scene.add(arrow1);
+        this.context.scene.add(arrow2);
 
-        _demo.arrows.push(arrow1);
-        _demo.arrows.push(arrow2);
+        this.context.arrows.push(arrow1);
+        this.context.arrows.push(arrow2);
 
         ray1 = new THREE.Raycaster(origin1, setup.xz1Direction);
         ray2 = new THREE.Raycaster(origin2, setup.xz2Direction);
 
-        rays.push(ray1);
-        rays.push(ray2);
+        this.context.rays.push(ray1);
+        this.context.rays.push(ray2);
     }
 
     // create rays for YZ diagonals
-    for(i = 0; i < gameDimensions; i++){
+    for(i = 0; i < this.gameDimensions; i++){
 
-        x = (i * cubeSeparation) - displacement;
-        y = (gameDimensions - 1) * cubeSeparation;
-        z = (gameDimensions - 1) * cubeSeparation;
+        x = (i * this.cubeSeparation) - this.displacement;
+        y = (this.gameDimensions - 1) * this.cubeSeparation;
+        z = (this.gameDimensions - 1) * this.cubeSeparation;
 
         origin1 = new THREE.Vector3(x,y,z);
         origin2 = new THREE.Vector3(x,-y,z);
@@ -267,17 +279,17 @@ Demo.Scene.Setup.prototype = {
         arrow1 = new THREE.ArrowHelper(setup.yz1Direction, origin1, setup.length, 0x0000CC);
         arrow2 = new THREE.ArrowHelper(setup.yz2Direction, origin2, setup.length, 0x0000CC);
 
-        _demo.arrows.push(arrow1);
-        _demo.arrows.push(arrow2);
+        this.context.arrows.push(arrow1);
+        this.context.arrows.push(arrow2);
 
-        _demo.scene.add(arrow1);
-        _demo.scene.add(arrow2);
+        this.context.scene.add(arrow1);
+        this.context.scene.add(arrow2);
 
         ray1 = new THREE.Raycaster(origin1, setup.yz1Direction);
         ray2 = new THREE.Raycaster(origin2, setup.yz2Direction);
 
-        rays.push(ray1);
-        rays.push(ray2);
+        this.context.rays.push(ray1);
+        this.context.rays.push(ray2);
 
     }
   },
@@ -288,7 +300,7 @@ Demo.Scene.Setup.prototype = {
         arrow1, arrow2, arrow3, arrow4,
         origin1, origin2, origin3, origin4,
         ray1, ray2, ray3, ray4,
-        distance = (gameDimensions + 1) * cubeSeparation;
+        distance = (this.gameDimensions + 1) * this.cubeSeparation;
 
     x = distance;
     y = distance;
@@ -304,25 +316,25 @@ Demo.Scene.Setup.prototype = {
     arrow3 = new THREE.ArrowHelper(setup.xyz3Direction, origin3, setup.length, 0x333333);
     arrow4 = new THREE.ArrowHelper(setup.xyz4Direction, origin4, setup.length, 0x333333);
 
-    _demo.arrows.push(arrow1);
-    _demo.arrows.push(arrow2);
-    _demo.arrows.push(arrow3);
-    _demo.arrows.push(arrow4);
+    this.context.arrows.push(arrow1);
+    this.context.arrows.push(arrow2);
+    this.context.arrows.push(arrow3);
+    this.context.arrows.push(arrow4);
 
-    _demo.scene.add(arrow1);
-    _demo.scene.add(arrow2);
-    _demo.scene.add(arrow3);
-    _demo.scene.add(arrow4);
+    this.context.scene.add(arrow1);
+    this.context.scene.add(arrow2);
+    this.context.scene.add(arrow3);
+    this.context.scene.add(arrow4);
 
     ray1 = new THREE.Raycaster(origin1, setup.xyz1Direction);
     ray2 = new THREE.Raycaster(origin2, setup.xyz2Direction);
     ray3 = new THREE.Raycaster(origin3, setup.xyz3Direction);
     ray4 = new THREE.Raycaster(origin4, setup.xyz4Direction);
 
-    rays.push(ray1);
-    rays.push(ray2);
-    rays.push(ray3);
-    rays.push(ray4);
+    this.context.rays.push(ray1);
+    this.context.rays.push(ray2);
+    this.context.rays.push(ray3);
+    this.context.rays.push(ray4);
   },
 
   /**

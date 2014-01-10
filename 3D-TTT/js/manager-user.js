@@ -1,5 +1,5 @@
 var Demo = Demo || {};
-Demo.Manager = Demo.Manager || {};
+Demo.Game = Demo.Game || {};
 
 Demo.Game.UserManager = function () {
 
@@ -10,15 +10,16 @@ Demo.Game.UserManager = function () {
 Demo.Game.UserManager.prototype = {
 
   takeTurn: function () {
-
     // for two players
-  if(users[0].myTurn){
-      //take turn
-    users[0].takeTurn();
+    if(users[0].myTurn){
 
-  } else {
-    users[1].takeTurn();
-  }
+      //take turn
+      users[0].takeTurn();
+
+    } else {
+      users[1].takeTurn();
+    }
+  },
 
 };
 

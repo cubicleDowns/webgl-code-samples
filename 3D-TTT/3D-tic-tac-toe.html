@@ -11,13 +11,15 @@
 
   <script src="lib/jquery-1.9.1.min.js"></script>
   <script src="lib/three.v63.min.js"></script>
+  <script src="lib/orbit-control.js"></script>
 
+  <script src="js/ttt.js"></script>
   <script src="js/scene.js"></script>
   <script src="js/camera.js"></script>
   <script src="js/setup.js"></script>
   <script src="js/util.js"></script>
   <script src="js/user.js"></script>
-  <script src="js/ttt.js"></script>
+  <script src="js/manager-user.js"></script>
 
 </head>
 <body>
@@ -30,8 +32,9 @@
   <hr>
   <p class="select">Game Dimensions: <input id="gridDimensions" type="number" name="quantity" min="3" value="3" step="1"></p>
   <hr>
-  <p class="info">This demo uses THREE.js rays and ray casters to determin win conditions.</p>
-  <p class="info">After each click, it projects a ray through each possible win combination and if it finds sequential selections from the same user, a winner is declared.</p>
+  <p class="info">This demo uses THREE.js rays and ray casters to determin win conditions and to calculate the computers next turn.</p>
+  <hr>
+  <p class="info">The ray approach works for N-N-N dimenions of tic-tac-toe.  I've clamped the number of dimensions to 10.</p>
   <hr>
   <p><a href="#" id="numCubes">Start Game</a></p>
 </div>
@@ -42,14 +45,19 @@
   <li><a id="toggle-rotation">Toggle Rotation</a></li>
 </ul>
 <ul class="info"><li>jQuery: v<span id="jqv"></span> | </li><li> THREE.js: v<span id="tjsv"></span></li></ul>
-<h2><a href="http://blog.tempt3d.com/">blog.tempt3d.com</a></h3>
+<h3><a href="http://blog.tempt3d.com/" target="_blank">blog.tempt3d.com</a></h3>
 
 </body>
 
   <script>
 
+    var demo = null;
+
     $(document).ready(function () {
-      init();
+
+      demo = new Demo();
+      demo.init();
+
     });
 
     /**

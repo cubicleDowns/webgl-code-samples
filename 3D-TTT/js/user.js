@@ -40,8 +40,6 @@ Demo.Player.prototype = {
     takeTurn: function () {
         // do turn logic
 
-
-
         //toggle turn
         this.turn();
     }
