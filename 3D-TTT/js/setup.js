@@ -13,7 +13,10 @@ Demo.Scene.Setup = function (params) {
   this.width = this.context.jqContainer.width();
   this.height = this.context.jqContainer.height();
 
+  // size of a cube
   this.cubeDim = 10;
+
+  // distance between cube centroids  [5c5]555[5c5]555[5c5] etc.
   this.cubeSeparation = 25;
 
   this.displacement = (this.cubeSeparation * (this.gameDimensions - 1))/2;
@@ -337,21 +340,6 @@ Demo.Scene.Setup.prototype = {
     this.context.rays.push(ray4);
   },
 
-  /**
-   *  Create a random color
-   */
-  randomColor: function () {
-      //cleverness via Paul Irish et al.
-      return new THREE.Color().setHex('0x' + ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6));
-  },
 
-  /**
-   *   Change a group of meshes to random colors.
-   */
-  highlight: function (meshes) {
-    for(var i = 0; i < meshes.length; i++) {
-      meshes[i].mesh.material.color = this.randomColor();
-    }
-  }
 };
 

@@ -47,10 +47,9 @@ Demo.Scene.prototype = {
     window.addEventListener('resize', me.onWindowResize, false);
   },
 
-  onWindowResize: function (e) {
+  onWindowResize: function () {
     this.liveCam.aspect = this.jqContainer.width() / this.jqContainer.height();
     this.liveCam.updateProjectionMatrix();
-
     this.renderer.setSize(this.jqContainer.width(), this.jqContainer.height());
   },
 
