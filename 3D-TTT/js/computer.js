@@ -45,14 +45,14 @@ Demo.Player.Computer.prototype = {
   randomTurn: function () {
     var i,
       cube,
-      randomVal = Demo.Util.randomTTTCube(this.userDims);
+      randomVal = Demo.Util.randomTTTCube(this.context.userDims);
 
     cube = this.context.scene.collisions[randomVal];
 
     if(cube.ttt === null){
       cube.ttt = this.name;
       cube.material.color = this.hexColor;
-      this.checkTTT();
+      this.context.checkTTT();
     } else {
       this.randomTurn();
     }
