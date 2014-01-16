@@ -11,7 +11,7 @@ Demo.Game = function (params) {
 
   this.userDims = 0;
 
-  this.userManager = new Demo.UserManager(this);
+  this.playerManager = null;
 
 };
 
@@ -19,30 +19,32 @@ Demo.Game.prototype = {
 
   init: function () {
 
-    var user = new Demo.Player.User({ context: this, name: "Josh", cssColor: "#0000FF", hexColor: 0x0000FF});
-    var computer = new Demo.Player.Computer({context: this, cssColor: "#FF0000", hexColor: 0xFF0000});
-
-    this.playerManager.addPlayer(user);
-    this.playerManager.addPlayer(computer);
-
     $('#jqv').text($.fn.jquery);
     $('#tjsv').text(THREE.REVISION);
+
 
     this.listeners();
 
   },
 
+  /**
+   * [listeners description]
+   * @return {[type]} [description]
+   */
   listeners: function () {
 
     var me = this;
 
-
     $("#toggle-arrows").on("click", function () {
-      me.toggleArrows();
+      Demo.Util.toggleArrows(me.scene.arrows);
     });
 
     $("#toggle-rotation").on("click", function () {
-      me._rotateCamera = (me._rotateCamera) ? false : true;
+      me.scene.rotateCamera = (me.scene.rotateCamera) ? false : true;
+    });
+
+    $("#toggle-wireframes").on("click", function () {
+      Demo.Util.toggleWireframes(me.scene.collisions);
     });
 
     $("#numCubes").on("click", function (e) {
@@ -50,24 +52,46 @@ Demo.Game.prototype = {
       $("body").append('<div id="ray-intersection"></div>');
       $("#what").fadeOut();
 
+      var userName = $('#userName').val();
+      var userColor = $('#userColor').val();
       var gameDims = parseInt($('#gridDimensions').val(), 10);
+      var smart = $('#smartComputer').val();
+      var userFirst = $('#userFirst').is(":checked");
+
       me.userDims = gameDims;
 
       me.scene = new Demo.Scene("ray-intersection", gameDims);
 
-      me.rayListener();
+      var turn = (userFirst) ? 0 : 1;
+
+      me.playerManager = new Demo.PlayerManager({context: me, turn: turn});
+
+      var user = new Demo.Player.User({ context: me, name: userName, cssColor: userColor});
+      var computer = new Demo.Player.Computer({context: me, cssColor: "#FF0000"});
+
+      // add user first.
+      me.playerManager.addPlayer(user);
+      me.playerManager.addPlayer(computer);
+
+      $.event.trigger({
+        type: "nextTurn",
+      });
 
       me.scene.animate();
 
     });
   },
 
-  // loop through all the rays and look to see if all of their collisions objects show the same values.
-  //
-  //    essentially, a ray will intersect all faces in one particular direction.  3 cubes = 6 faces = 6 intersections
-  //    if all of the intersections show a 'selection' has take place, it'll check the selection types (ttt property)
+  /**
+   * loop through all the rays and look to see if all of their collisions objects show the same values.
+   * essentially, a ray will intersect all faces in one particular direction.  3 cubes = 6 faces = 6 intersections
+   * if all of the intersections show a 'selection' has take place, it'll check the selection types (ttt property)
+   * @return {[type]} [description]
+   */
   checkForTTT: function () {
     var i,j,
+        user1 = this.playerManager.players[0],
+        user2 = this.playerManager.players[1],
         collisions,
         ticUser1,
         ticUser2;
@@ -78,141 +102,43 @@ Demo.Game.prototype = {
       ticUser2 = 0;
 
       for(j = 0; j < collisions.length; j++){
-        if(collisions[j].object.ttt === 'user'){
+        if(collisions[j].object.ttt === user1.name){
           ticUser1++;
-        } else if (this.scene.collisions[j].ttt === 'computer'){
+        } else if (collisions[j].object.ttt === user2.name){
           ticUser2++;
         }
       }
 
+      // if all intersections are of a single player, we can conclude that player has tic/tac/toe.
       if(ticUser1 === collisions.length){
-        console.log("Tic Tac Toe - User 1");
-        $('#winner').append("Tic Tac Toe - User 1 (red) is Winner!");
-        alert("Tic Tac Toe - User 1 (red) is Winner!");
-        this.gameOver = true;
+        this.declareWinner(user1);
       }
 
       if (ticUser2 === collisions.length){
-        console.log("Tic Tac Toe - User 2 (black) - Winner");
-        $('#winner').append("Tic Tac Toe - User 2 (black) - Winner");
-        this.gameOver = true;
+        this.declareWinner(user2);
       }
     }
 
+  },
+
+  declareWinner: function (user) {
+
+    this.gameOver = true;
+
+    // adding a bit of a delay so the cube material has time to change color before declaring the winner.
+    setTimeout(function() {
+      if(user.isHuman){
+        $('#winner').append("Congrats " + user.name + ".  You win!");
+        alert("Congrats " + user.name + ".  You win!");
+      } else {
+        $('#winner').append("You lose. Computer wins.");
+        alert("You lose. Computer wins.");
+      }
+    }, 200);
   },
 
   nextComputerTurn: function () {
 
-    var uhoh,
-      bestSelection;
-
-    uhoh = this.blockOpponentOrWin();
-
-    if(!uhoh) {
-      bestSelection = this.findBestSelection();
-    } else {
-      bestSelection = uhoh.shift();
-    }
-
-    this.makeComputerSelection(bestSelection);
   },
-
-
-
-  toggleArrows: function () {
-    var i,
-        vis;
-
-    for(i = 0; i < this.scene.arrows.length; i++){
-      this.scene.arrows[i].cone.visible = (this.scene.arrows[i].cone.visible) ? false : true;
-      this.scene.arrows[i].line.visible = (this.scene.arrows[i].line.visible) ? false : true;
-    }
-  },
-
-  // looks for rays intersections sets where a single cube has not been selected.
-  blockOpponentOrWin: function () {
-
-    var i,j,
-        lossSlots = [],
-        winSlots = [],
-        collisions,
-        personUser,
-        computerUser;
-
-    for(i = 0; i < this.scene.rays.length; i++){
-      collisions = this.scene.rays[i].intersectObjects(this.scene.collisions);
-      personUser = 0;
-      computerUser = 0;
-
-      for(j = 0; j < collisions.length; j++){
-        if(collisions[j].object.ttt === 'user'){
-          personUser++;
-        } else if (this.scene.collisions[j].ttt === 'computer'){
-          computerUser++;
-        }
-      }
-
-      // push the positions that have N-1 selections from the human user already
-      if(personUser === (collisions.length - 2)){
-        lossSlots.push(collisions[j].object.num);
-      }
-
-      // push the positions that have N-1 selections from the computer user already
-      // these are winning selections
-      if (computerUser === (collisions.length - 2)){
-        winSlots.push(collisions[j].object.num);
-      }
-    }
-
-    // return win slots first.
-    // return the loss slots second.
-    // else, return false as there aren't any win or loss selection options.
-    if(winSlots.length > 0){
-      return winSlots;
-    } else if(blockSlots.length > 0) {
-      return blockSlots;
-    } else {
-      return false;
-    }
-  },
-
-  setupWeightObject: function () {
-    var i,
-      weights = {},
-      maxDims = this.userDims * this.userDims * this.userDims;
-
-    for(var i = 0; i < maxDims; i++){
-      weights[i] = {computer: 0, user: 0};
-    }
-  },
-
-  // finds the best selection location for the computer
-  findBestSelection: function () {
-    var i,j,
-        collisions,
-        ticUser1,
-        ticUser2,
-        weighting;
-
-    weighting = this.setupWeightObject();
-
-    for(i = 0; i < this.scene.rays.length; i++){
-      collisions = this.scene.rays[i].intersectObjects(this.scene.collisions);
-
-      for(j = 0; j < collisions.length; j++){
-        if(collisions[j].object.ttt === 'user'){
-          weighting[collisions[j].object.num].user++;
-        } else if (this.scene.collisions[j].ttt === 'computer'){
-          weighting[collisions[j].object.num].computer++;
-        }
-      }
-    }
-
-    return weighting;
-  },
-
-  makeComputerSelection: function () {
-
-  }
 
 };

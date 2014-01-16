@@ -23,8 +23,6 @@ Demo.Scene.Setup = function (params) {
 
   this.mesh = null;
 
-  this.userColor1 = new THREE.Color(0xFF434C);
-  this.userColor2 = new THREE.Color(0x00CC00);
   this.cubeColor1 = new THREE.Color(0x6ACEEB);
   this.cubeColor2 = new THREE.Color(0xFFFFFF);
   this.cubeColor3 = new THREE.Color(0xCCCCCC);

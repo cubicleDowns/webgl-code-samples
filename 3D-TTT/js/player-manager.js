@@ -3,11 +3,13 @@ var Demo = Demo || {};
 /**
  * Managers the players.  Listens for the nextTurn event.
  */
-Demo.PlayerManager = function () {
+Demo.PlayerManager = function (params) {
+
+  this.context = params.context;
 
   this.players = [];
 
-  this.turn = 0;
+  this.turn = params.turn;
 
   this.init();
 
@@ -24,11 +26,6 @@ Demo.PlayerManager.prototype = {
    */
   addPlayer: function (player) {
     this.players.push(player);
-    this.names.push(player.name);
-  },
-
-  getNames: function () {
-    return this.names;
   },
 
   /**
@@ -40,12 +37,15 @@ Demo.PlayerManager.prototype = {
     var player = this.players[this.turn];
 
     if(!this.context.gameOver) {
-      player.takeTurn();
       //increment turn
       this.turn++;
 
       //reset to 0 of num users run out
       this.turn %= this.players.length;
+
+      // each player has their own takeTurn method
+      // which calls either turn logic or enables interaction with the canvas
+      player.takeTurn();
     }
   },
 

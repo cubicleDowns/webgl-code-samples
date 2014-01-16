@@ -18,7 +18,7 @@ Demo.Scene = function (containerId, dims) {
   // arrows visualizing vectors
   this.arrows = [];
 
-  this.cameras = new Demo.Scene.Cameras(this, dims);
+  this.cameras = null;
   this.setup = null;
   this.stats = null;
 
@@ -37,7 +37,9 @@ Demo.Scene.prototype = {
 
   init: function (dims) {
 
-    this.setup = new Demo.Scene.Setup({ context: this, cubes: dims});
+    var params = {context: this, cubes: dims};
+    this.cameras = new Demo.Scene.Cameras(params);
+    this.setup = new Demo.Scene.Setup(params);
     this.listeners();
     // this.statsSetup();
   },

@@ -84,19 +84,6 @@ ul.menu li {
   width: 30px;
 }
 
-#whos-turn {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  width: 140px;
-  height: 50px;
-  font-size: 24px;
-  z-index: 20;
-  text-align: center;
-  text-transform: uppercase;
-  color: #FFF;
-}
-
 #winner {
   font-size: 25px;
   color: red;

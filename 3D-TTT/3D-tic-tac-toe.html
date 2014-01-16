@@ -12,20 +12,22 @@
   <script src="lib/jquery-1.9.1.min.js"></script>
   <script src="lib/three.v63.min.js"></script>
   <script src="lib/orbit-control.js"></script>
+  <script src="lib/stats.min.js"></script>
+  <script src="lib/detector.js"></script>
+  <script src="lib/jscolor/jscolor.js"></script>
 
-  <script src="js/ttt.js"></script>
+  <script src="js/game.js"></script>
   <script src="js/scene.js"></script>
-  <script src="js/camera.js"></script>
   <script src="js/setup.js"></script>
   <script src="js/util.js"></script>
+  <script src="js/camera.js"></script>
+
   <script src="js/user.js"></script>
-  <script src="js/manager-user.js"></script>
+  <script src="js/computer.js"></script>
+  <script src="js/player-manager.js"></script>
 
 </head>
 <body>
-<div id="whos-turn">
-  Your turn
-</div>
 <div id="winner"></div>
 <div id="what">
   <h1>Ready Player h1?</h1>
@@ -36,6 +38,17 @@
   <hr>
   <p class="info">The ray approach works for N-N-N dimenions of tic-tac-toe.  I've clamped the number of dimensions to 10.</p>
   <hr>
+  <p>
+    <input id="userColor" class="color {hash: true}" value="#0000FF">
+    <input id="userName" value="Player1">
+  </p>
+  <p>
+    <label>Smart computer? <input id="smartComputer" value="smart" type="checkbox" disabled="true"></label>
+  </p>
+  <p>
+    <label>You first? <input id="userFirst" value="true" type="checkbox" checked></label>
+  </p>
+
   <p><a href="#" id="numCubes">Start Game</a></p>
 </div>
 <ul class="menu">
@@ -43,6 +56,7 @@
   <li></li>
   <li><a id="toggle-arrows">Toggle Rays</a></li>
   <li><a id="toggle-rotation">Toggle Rotation</a></li>
+  <li><a id="toggle-wireframes">Toggle Wireframes</a></li>
 </ul>
 <ul class="info"><li>jQuery: v<span id="jqv"></span> | </li><li> THREE.js: v<span id="tjsv"></span></li></ul>
 <h3><a href="http://blog.tempt3d.com/" target="_blank">blog.tempt3d.com</a></h3>
@@ -55,20 +69,11 @@
 
     $(document).ready(function () {
 
-      demo = new Demo();
+      demo = new Demo.Game();
       demo.init();
 
     });
 
-    /**
-     *  tttGrid
-     */
-    function yourTurn(tttGrid){
-
-      // return a number between [0,26] representing the cube number.
-      // right click on the cube to get the cube number.
-      return num = Math.floor((Math.random()*27));
-    }
 
   </script>
 <script>

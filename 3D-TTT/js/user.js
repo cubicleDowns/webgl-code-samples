@@ -13,35 +13,38 @@ Demo.Player.User = function ( params ) {
 
     this.uid = Demo.Util.generateUUID();
 
-    this.hexColor = params.hexColor || 0x0000FF;
     this.cssColor = params.cssColor || "#0000FF";
 
-    this.myTurn = false;
+    this.myTurn = true;
 
-    this.init();
+    this.isHuman = true;
 
 };
 
 Demo.Player.User.prototype = {
 
-  init: function () {
-      this.rayListener();
-  },
-
   takeTurn: function () {
-      // do turn logic
-      this.myTurn = true;
+    this.enableClick();
   },
 
-  rayListener: function () {
+  enableClick: function () {
 
     var me = this;
-    $("#ray-intersection").on("click", function (e) {
-      if(!me.context.gameOver && me.myTurn){
+
+    // this.myTurn = true;
+    $("#ray-intersection").bind("click", function (e){
+      if(!me.context.gameOver){
         me.selectCube(e);
-        me.myTurn = false;
       }
     });
+  },
+
+  disableClick: function () {
+    $("#ray-intersection").unbind('click');
+  },
+
+  getTurn: function () {
+    return this.myTurn;
   },
 
   selectCube: function (event){
@@ -65,7 +68,7 @@ Demo.Player.User.prototype = {
     mouse.y = -((event.clientY - topOffset) / this.context.scene.jqContainer.height()) * 2 + 1;
 
     vector = new THREE.Vector3(mouse.x, mouse.y, 1);
-    this.scene.projector.unprojectVector(vector, this.context.scene.cameras.liveCam);
+    this.context.scene.projector.unprojectVector(vector, this.context.scene.cameras.liveCam);
 
     ray = new THREE.Raycaster(this.context.scene.cameras.liveCam.position, vector.sub(this.context.scene.cameras.liveCam.position).normalize());
 
@@ -75,16 +78,15 @@ Demo.Player.User.prototype = {
     // only change the first (closest) intersected object.
     if(intersected.length > 0) {
 
-      console.log('mesh num: ', intersected[0].object.cubeNum);
-
       if(intersected[0].object.ttt === null) {
 
-        intersected[0].object.material.color = this.context.scene.setup.userColor1;
-        intersected[0].object.ttt = 'user1';
+        Demo.Util.selectCube(intersected[0].object, {color: this.cssColor, name: this.name });
 
         this.context.checkForTTT();
+        this.disableClick();
 
         if(!this.context.gameOver) {
+
             // after a short pause, execute user code.
             $.event.trigger({
               type: "nextTurn",
