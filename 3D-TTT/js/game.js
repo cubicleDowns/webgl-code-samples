@@ -36,14 +36,20 @@ Demo.Game.prototype = {
     var me = this;
 
     $("#toggle-arrows").on("click", function () {
+      $("#toggle-arrows").toggleClass("toggle-arrows-on");
+      $("#toggle-arrows").toggleClass("toggle-arrows-off");
       Demo.Util.toggleArrows(me.scene.arrows);
     });
 
-    $("#toggle-rotation").on("click", function () {
+    $("#toggle-rotate").on("click", function () {
+      $("#toggle-rotate").toggleClass("toggle-rotate-on");
+      $("#toggle-rotate").toggleClass("toggle-rotate-off");
       me.scene.rotateCamera = (me.scene.rotateCamera) ? false : true;
     });
 
     $("#toggle-wireframes").on("click", function () {
+      $("#toggle-wireframes").toggleClass("toggle-wireframes-on");
+      $("#toggle-wireframes").toggleClass("toggle-wireframes-off");
       Demo.Util.toggleWireframes(me.scene.collisions);
     });
 

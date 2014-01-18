@@ -41,10 +41,8 @@ Demo.Util = {
 
   toggleWireframes: function (meshes) {
 
-    debugger;
     for(var i = 0; i< meshes.length; i++){
       meshes[i].material.wireframe = !meshes[i].material.wireframe;
-
     }
   },
 

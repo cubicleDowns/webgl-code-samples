@@ -39,11 +39,40 @@ ul.menu {
 }
 
 ul.menu li {
-  display: block;
   float: left;
-  font-size: 14px;
-  padding: 5px;
-  width: 100%;
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.toggle {
+  width: 26px;
+  height: 26px;
+}
+.toggle-rotate-on {
+  background: url(rotate-on.png);
+}
+
+.toggle-rotate-off {
+  background: url(rotate-off.png);
+}
+
+.toggle-arrows-on {
+  background: url(arrows-on.png);
+}
+
+.toggle-arrows-off {
+  background: url(arrows-off.png);
+}
+
+.toggle-wireframes-on {
+  background: url(wireframe-on.png);
+}
+
+.toggle-wireframes-off {
+  background: url(wireframe-off.png);
 }
 
 .select {
