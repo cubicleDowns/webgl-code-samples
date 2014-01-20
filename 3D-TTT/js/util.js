@@ -1,8 +1,7 @@
 var Demo = Demo || {};
 
 /**
- * @namespace  Camera initialization
- * @class Creates cameras for the scene.
+ * @namespace  General untility functions.
  */
 Demo.Util = {
 
@@ -26,7 +25,7 @@ Demo.Util = {
    * @return {[type]}            [description]
    */
   randomTTTCube: function (nDimension) {
-    return num = Math.floor((Math.random()*nDimension*nDimension*nDimension));
+    return Math.floor((Math.random()*nDimension*nDimension*nDimension));
   },
 
   /**
@@ -34,9 +33,6 @@ Demo.Util = {
    */
   randomColor: function () {
     return ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
-  },
-
-  toggleWireframes: function (meshes) {
   },
 
   toggleWireframes: function (meshes) {

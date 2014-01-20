@@ -23,6 +23,7 @@ Demo.PlayerManager.prototype = {
 
   /**
    * Adds a player to the players queue.
+   * @param {Player Object} player
    */
   addPlayer: function (player) {
     this.players.push(player);
@@ -30,7 +31,6 @@ Demo.PlayerManager.prototype = {
 
   /**
    * Take the next player's turn.
-   * @return {[type]}
    */
   nextTurn: function () {
 

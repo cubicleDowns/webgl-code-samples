@@ -1,6 +1,6 @@
 var Demo = Demo || {};
 
-Demo.Game = function (params) {
+Demo.Game = function () {
 
   // scene graph and other stuff.
   this.turn = 1;
@@ -20,9 +20,6 @@ Demo.Game = function (params) {
 Demo.Game.prototype = {
 
   init: function () {
-
-    $('#jqv').text($.fn.jquery);
-    $('#tjsv').text(THREE.REVISION);
 
     this.listeners();
 
@@ -54,7 +51,7 @@ Demo.Game.prototype = {
       Demo.Util.toggleWireframes(me.scene.collisions);
     });
 
-    $("#numCubes").on("click", function (e) {
+    $("#startGame").on("click", function (e) {
 
       $("body").append('<div id="ray-intersection"></div>');
       $("#what").fadeOut();
@@ -146,7 +143,7 @@ Demo.Game.prototype = {
         console.log("Congrats " + user.name + ".  You win!");
       } else {
         alert("You lose. Computer wins.");
-        console.log("You lose.  Computer wins.")
+        console.log("You lose.  Computer wins.");
       }
     }, 200);
   },

@@ -111,7 +111,11 @@ Demo.Scene.Setup.prototype = {
     }
   },
 
+  /**
+   * Creates rays for ray-casting.
+   */
   createRays: function () {
+
     var setup = {
         xDirection: xDirection = new THREE.Vector3(-1,0,0),
         yDirection: yDirection = new THREE.Vector3(0,-1,0),
@@ -139,6 +143,10 @@ Demo.Scene.Setup.prototype = {
     this.create3DDiagonals(setup);
   },
 
+  /**
+   * Create all 2D vectors
+   * @param  {Object} setup Setup object containing all normalized vector directions.
+   */
   create2DVectors: function (setup) {
     var i,j,
         x,y,z,

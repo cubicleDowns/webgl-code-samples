@@ -23,15 +23,22 @@ Demo.Player.User = function ( params ) {
 
 Demo.Player.User.prototype = {
 
+  /**
+   * User takes a turn.  Called from the Player Manager
+   * @return {[type]} [description]
+   */
   takeTurn: function () {
     this.enableClick();
   },
 
+  /**
+   * Enables the click function.  Keeps interaction minimized when it isn't the user's turn.
+   * @return {[type]} [description]
+   */
   enableClick: function () {
 
     var me = this;
 
-    // this.myTurn = true;
     $("#ray-intersection").bind("click", function (e){
       if(!me.context.gameOver){
         me.selectCube(e);
@@ -39,14 +46,18 @@ Demo.Player.User.prototype = {
     });
   },
 
+  /**
+   * Unbind the disableClick
+   */
   disableClick: function () {
     $("#ray-intersection").unbind('click');
   },
 
-  getTurn: function () {
-    return this.myTurn;
-  },
-
+  /**
+   * Cast a ray and select a cube if not already selected.
+   * @param  {[type]} event Event information including mouse coordinates.
+   * @return {[type]}       [description]
+   */
   selectCube: function (event){
 
     var mouse = {},
@@ -86,7 +97,6 @@ Demo.Player.User.prototype = {
         this.disableClick();
 
         if(!this.context.gameOver) {
-
             // after a short pause, execute user code.
             $.event.trigger({
               type: "nextTurn",
