@@ -9,7 +9,9 @@ Demo.Game = function (params) {
 
   this.gameOver = false;
 
-  this.userDims = 0;
+  this.userDims = 3;
+
+  this.winNum = 3;
 
   this.playerManager = null;
 
@@ -22,13 +24,12 @@ Demo.Game.prototype = {
     $('#jqv').text($.fn.jquery);
     $('#tjsv').text(THREE.REVISION);
 
-
     this.listeners();
 
   },
 
   /**
-   * [listeners description]
+   * Event listeners for the UI.
    * @return {[type]} [description]
    */
   listeners: function () {
@@ -58,13 +59,15 @@ Demo.Game.prototype = {
       $("body").append('<div id="ray-intersection"></div>');
       $("#what").fadeOut();
 
-      var userName = $('#userName').val();
-      var userColor = $('#userColor').val();
-      var gameDims = parseInt($('#gridDimensions').val(), 10);
-      var smart = $('#smartComputer').val();
-      var userFirst = $('#userFirst').is(":checked");
+      var userName = $('#userName').val(),
+          userColor = $('#userColor').val(),
+          gameDims = parseInt($('#gridDimensions').val(), 10),
+          smart = $('#smartComputer').val(),
+          // winNum = parseInt($('#winNum').val(), 10),
+          userFirst = $('#userFirst').is(":checked");
 
       me.userDims = gameDims;
+      // me.winNum = winNum;
 
       me.scene = new Demo.Scene("ray-intersection", gameDims);
 
@@ -89,6 +92,7 @@ Demo.Game.prototype = {
   },
 
   /**
+   * Check for Tic-Tac-Toe
    * loop through all the rays and look to see if all of their collisions objects show the same values.
    * essentially, a ray will intersect all faces in one particular direction.  3 cubes = 6 faces = 6 intersections
    * if all of the intersections show a 'selection' has take place, it'll check the selection types (ttt property)
@@ -127,6 +131,10 @@ Demo.Game.prototype = {
 
   },
 
+  /**
+   *  Declare the winner!
+   *  @param {User Object} user
+   */
   declareWinner: function (user) {
 
     this.gameOver = true;
@@ -134,17 +142,14 @@ Demo.Game.prototype = {
     // adding a bit of a delay so the cube material has time to change color before declaring the winner.
     setTimeout(function() {
       if(user.isHuman){
-        $('#winner').append("Congrats " + user.name + ".  You win!");
         alert("Congrats " + user.name + ".  You win!");
+        console.log("Congrats " + user.name + ".  You win!");
       } else {
-        $('#winner').append("You lose. Computer wins.");
         alert("You lose. Computer wins.");
+        console.log("You lose.  Computer wins.")
       }
     }, 200);
   },
 
-  nextComputerTurn: function () {
-
-  },
 
 };

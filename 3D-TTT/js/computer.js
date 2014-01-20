@@ -172,9 +172,9 @@ Demo.Player.Computer.prototype = {
       collisions = this.scene.rays[i].intersectObjects(this.scene.collisions);
 
       for(j = 0; j < collisions.length; j++){
-        if(collisions[j].object.ttt === 'user'){
+        if(collisions[j].object.ttt === this.context.playerManager.players[0].name){
           weighting[collisions[j].object.num].user++;
-        } else if (this.scene.collisions[j].ttt === 'computer'){
+        } else if (this.scene.collisions[j].ttt === this.context.playerManager.players[0].name){
           weighting[collisions[j].object.num].computer++;
         }
       }
