@@ -1,15 +1,19 @@
-body {
-  font-size: 10px;
+* {
   font-family: "Arial, Helvetica, sans-serif";
   margin: 0;
   padding: 0;
 }
 
-h2 {
+body {
+  overflow: hidden;
+  background-color: #000;
+}
+
+h4 {
   position: absolute;
-  top: 10px;
+  bottom: 10px;
   right: 10px;
-  text-transform: uppercase;
+  z-index: 100;
 }
 
 ul.info{
@@ -17,8 +21,8 @@ ul.info{
   bottom: 4px;
   left: 4px;
   list-style: none;
-  margin: 0;
-  padding: 0;
+  z-index: 100;
+  color: #999;
 }
 
 ul.info li {
@@ -32,70 +36,99 @@ ul.menu {
   top: 4px;
   left: 4px;
   list-style: none;
-  margin: 0;
-  padding: 0;
+  z-index: 20;
+  color: #FFF;
 }
 
 ul.menu li {
-  display: block;
   float: left;
-  font-size: 14px;
-  padding: 5px;
-  width: 100%;
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.toggle {
+  width: 26px;
+  height: 26px;
+}
+.toggle-rotate-on {
+  background: url(rotate-on.png);
+}
+
+.toggle-rotate-off {
+  background: url(rotate-off.png);
+}
+
+.toggle-arrows-on {
+  background: url(arrows-on.png);
+}
+
+.toggle-arrows-off {
+  background: url(arrows-off.png);
+}
+
+.toggle-wireframes-on {
+  background: url(wireframe-on.png);
+}
+
+.toggle-wireframes-off {
+  background: url(wireframe-off.png);
+}
+
+.select {
+  color: #660000;
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.info {
+
 }
 
 #what {
-  position: absolute;
-  left: 5px;
-  top: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 200px;
+  padding: 3px;
   width: 300px;
-  color: #333;
-  z-index: 20;
-  font-size: 14px;
-  font-weight: bolder;
+  color: #FFF;
+  font-size: 16px;
+  background-color: #CCC;
+  border: solid 1px #FF0000;
+  z-index: 21;
 }
 
+#what p {
+  color: #666;
+  font-size: 14px;
+  padding: 2px;  
+}
+
+#what h1 {
+  color: #333333;
+}
+
+#gridDimensions {
+  width: 30px;
+}
 
 #winner {
   font-size: 25px;
   color: red;
   position: absolute;
-  left: 300px;
-  top: 10px;
+  left: 50%;
+  bottom: 10px;
+  z-index: 20;
 }
 
 #ray-intersection {
-  border: 1px solid #CCC;
   z-index: 10;
-  width: 600px;
-  height: 600px;
-  /* OFFSET CHANGE */
-  /* adding these values to demonstrate ray intersections anywhere in the scene */
+  width: 100%;
+  height: 100%;
   position: absolute;
-  right: 100px;
-  top: 100px;
-  pointer-events: all;
-  background-color: #CCCCCC;
-}
-
-#select-marquee {
-  position:absolute;
-  /* initialize it offscreen */
-  top: -2px;
-  left: -2px;
-  z-index: 50;
-  height: 0px;
-  width: 10px;
-  background-color: rgba(208, 255, 242, 0.5);
-  border: dotted 1px #9a9a9a;
-  margin: 0;
-  padding: 0;
-  pointer-events:none;
-}
-
-.clickMarkers {
-  pointer-events:none;
-  position: absolute;
-  z-index: 100;
-  color: white;
+  right: 0;
+  top: 0;
 }

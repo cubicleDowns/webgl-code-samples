@@ -134,7 +134,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
   this.update = function () {
 
-    if(!_demo.rotateCamera){
+    if(!demo.scene.rotateCamera){
       return;
     }
 

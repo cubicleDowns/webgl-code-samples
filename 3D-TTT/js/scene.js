@@ -1,7 +1,6 @@
 var Demo = Demo || {};
-Demo.Scene = Demo.Scene || {};
 
-Demo.Scene = function (containerId) {
+Demo.Scene = function (containerId, dims) {
 
   this.scene = new THREE.Scene();
   this.projector = new THREE.Projector();
@@ -13,30 +12,37 @@ Demo.Scene = function (containerId) {
   // an array of scene elements we're interested in colliding with
   this.collisions = [];
 
+  // rays for casting.
+  this.rays = [];
+
   // arrows visualizing vectors
   this.arrows = [];
 
-  this.cameras = new Demo.Cameras(this);
-  this.setup = new Demo.Scene.Setup({ context: this, cubes: 3});
-  this.stats = null;
+  this.cameras = null;
+  this.setup = null;
+  this.controls = null;
 
-  this.rotateCamera = false;
+  this.players = [];
+
+  this.rotateCamera = true;
 
   this.theta = 0;
   this.radius = 100;
 
-  this.init();
+  this.init(dims);
 
 };
 
 Demo.Scene.prototype = {
 
-  init: function () {
+  init: function (dims) {
 
-    this.renderer.setClearColor( 0xEEEEEE, 0.2 );
+    var params = {context: this, cubes: dims};
+    this.cameras = new Demo.Scene.Cameras(params);
+    this.setup = new Demo.Scene.Setup(params);
+    this.controls = new THREE.OrbitControls( this.cameras.liveCam );
 
     this.listeners();
-    // this.statsSetup();
   },
 
   listeners: function () {
@@ -44,34 +50,33 @@ Demo.Scene.prototype = {
     window.addEventListener('resize', me.onWindowResize, false);
   },
 
-  onWindowResize: function (e) {
+  /**
+   * Resizes the camera when document is resized.
+   * @return {[type]}
+   */
+  onWindowResize: function () {
     this.liveCam.aspect = this.jqContainer.width() / this.jqContainer.height();
     this.liveCam.updateProjectionMatrix();
-
     this.renderer.setSize(this.jqContainer.width(), this.jqContainer.height());
   },
 
-  statsSetup: function () {
-    this.stats = new Stats();
-    this.stats.domElement.style.position = 'absolute';
-    this.stats.domElement.style.top = '0px';
-    this.container.appendChild( this.stats.domElement );
-  },
 
   /**
    * Animates the scene
    */
-  animate: function () {
+  animate: function (animate) {
+    this.rotateCamera = animate;
     // NOTE: using the global variable "demo" instead of "this".
-      requestAnimationFrame(_demo.animate);
-      _demo.render();
-
+      requestAnimationFrame(demo.scene.animate);
+      demo.scene.render();
   },
 
   /**
    * Renders the WebGL scene
    */
   render: function () {
+
+    this.controls.update();
 
     if(this.rotateCamera){
       this.theta += 0.3;
@@ -83,6 +88,6 @@ Demo.Scene.prototype = {
     }
 
     // NOTE: using the global variable "demo" instead of "this".
-    this.renderer.render(this.scene, _demo.cameras.liveCam);
+    this.renderer.render(this.scene, demo.scene.cameras.liveCam);
   }
 };

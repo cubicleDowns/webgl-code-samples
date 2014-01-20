@@ -1,18 +1,20 @@
 var Demo = Demo || {};
-Demo.Cameras = Demo.Cameras || {};
+Demo.Scene = Demo.Scene || {};
 
 /**
  * @namespace  Camera initialization
  * @class Creates cameras for the scene.
  */
-Demo.Cameras = function (context) {
+Demo.Scene.Cameras = function (params) {
 
-    this.context = context;
+    this.context = params.context;
+
+    this.cameraMultiplier = params.cubes;
 
     this.liveCam = null;
     this.FOV = 70;
-    this.WIDTH = context.jqContainer.width();
-    this.HEIGHT = context.jqContainer.height();
+    this.WIDTH = params.context.jqContainer.width();
+    this.HEIGHT = params.context.jqContainer.height();
     this.ASPECT_RATIO = this.WIDTH / this.HEIGHT;
     this.NEAR_PLANE = 1;
     this.FAR_PLANE = 100000;
@@ -22,7 +24,7 @@ Demo.Cameras = function (context) {
     this.init();
 };
 
-Demo.Cameras.prototype = {
+Demo.Scene.Cameras.prototype = {
 
     /**
      * Initialize the camera object and create default cameras.
@@ -36,8 +38,10 @@ Demo.Cameras.prototype = {
      */
     initPerspective: function () {
         this.liveCam = new THREE.PerspectiveCamera(this.FOV, this.ASPECT_RATIO, this.NEAR_PLANE, this.FAR_PLANE);
-        this.liveCam.position.z = 200;
-
+        var dim = (this.cameraMultiplier / 2) * 25;
+        var hyp = Math.sqrt(dim*dim + dim*dim + dim*dim);
+        console.log(hyp);
+        this.liveCam.position.z = hyp;
     }
 
 };
