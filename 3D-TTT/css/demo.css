@@ -9,11 +9,11 @@ body {
   background-color: #000;
 }
 
-h3 {
+h4 {
   position: absolute;
   bottom: 10px;
   right: 10px;
-  text-transform: uppercase;
+  z-index: 100;
 }
 
 ul.info{
@@ -21,6 +21,8 @@ ul.info{
   bottom: 4px;
   left: 4px;
   list-style: none;
+  z-index: 100;
+  color: #999;
 }
 
 ul.info li {
@@ -54,9 +56,7 @@ ul.menu li {
 }
 
 .info {
-  color: #666;
-  font-size: 14px;
-  padding: 2px;
+
 }
 
 #what {
@@ -73,7 +73,9 @@ ul.menu li {
 }
 
 #what p {
-  z-index: 22;
+  color: #666;
+  font-size: 14px;
+  padding: 2px;  
 }
 
 #what h1 {

@@ -26,25 +26,19 @@ Demo.Util = {
    * @return {[type]}            [description]
    */
   randomTTTCube: function (nDimension) {
-      // return a number between [0,26] representing the cube number.
-      // right click on the cube to get the cube number.
-      return num = Math.floor((Math.random()*nDimension*nDimension*nDimension));
+    return num = Math.floor((Math.random()*nDimension*nDimension*nDimension));
   },
 
   /**
    *  Create a random color
    */
   randomColor: function () {
-      //cleverness via Paul Irish et al.
-      return ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+    return ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
   },
 
   toggleWireframes: function (meshes) {
-
-    debugger;
     for(var i = 0; i< meshes.length; i++){
       meshes[i].material.wireframe = !meshes[i].material.wireframe;
-
     }
   },
 
