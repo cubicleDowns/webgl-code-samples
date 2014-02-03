@@ -3,10 +3,6 @@
 tttApp.controller('TTTController', function ($scope, ThreeEnv) {
 
   $scope.dims = 3;
-// myForm.input.$valid = true
-// myForm.input.$error = {"required":false,"number":false,"max":false,"min":false}
-// myForm.$valid = true
-// myForm.$error.required = false
 
   $scope.usercolor = "#0000FF";
   $scope.username = "Player1";
@@ -24,15 +20,17 @@ tttApp.controller('TTTController', function ($scope, ThreeEnv) {
     $('#ttt-canvas').width(width);
     $('#ray-intersection').fadeIn();
 
+
+    // notice the use of 'this'.  this refers to the controller $scope when this function is called
+    // in normal JS callbacks you'd reference the values with 'var me = this'.  then reference 'me' in the callback function.
     var params = {
-            dims: $scope.dims,
-            usercolor: $scope.usercolor,
-            username: $scope.username,
-            userfirst: $scope.userfirst,
+            dims: this.dims,
+            usercolor: this.usercolor,
+            username: this.username,
+            userfirst: this.userfirst,
             canvasId: canvasId
           };
 
-    debugger;
     ThreeEnv.init(params);
   };
 
@@ -51,12 +49,10 @@ tttApp.controller('TTTController', function ($scope, ThreeEnv) {
   //////////////////////////////////////////////////////////
 
 
-  // calling toggle function within ThreeEnv factory to toggle wireframes
   $scope.toggleWireframes = function () {
     ThreeEnv.toggle("wireframes");
   };
 
-  // calling toggle function within ThreeEnv factory to toggle the arrows
   $scope.toggleArrows = function () {
     ThreeEnv.toggle("arrows");
   };
