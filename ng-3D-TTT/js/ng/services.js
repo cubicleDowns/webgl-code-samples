@@ -17,32 +17,39 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
 
   }
 
-
-
   function animate () {
     requestAnimationFrame(animate);
     render();
   }
+
+  ///////////////////////////////////////////////////////////////////
+  ///
+  ///  EXTERNAL API CALLS
+  ///    Try and keep as much logic as possible within this call
+  ///    Minimize additiona functions in the scene classes.
+  ///    If you need to do something complex, do it in DEMO.UTIL and
+  ///    call that function from within the following API function references
+  ///
+  ///////////////////////////////////////////////////////////////////
 
   /**
    * Renders the THREE.js scene graph.
    * @return {screen} Rendered frame buffer of scene.
    */
   function render() {
-
     demo.renderer.render(demo.scene, demo.cameras.liveCam);
-
     if(rotateCamera){
       demo.cameras.rotateCamera();
     } else {
       demo.controls.update();
     }
-
-    console.count('render');
-
   }
 
-
+  /**
+   * Make a
+   * @param  {[type]} mouse [description]
+   * @return {[type]}       [description]
+   */
   function makeSelection(mouse) {
     $log.info('selection: ', mouse);
     // var intersected = demo.interaction.intersectCubes(mouse);
@@ -52,6 +59,32 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
     // }
   }
 
+  function marqueeSelection(mouse) {
+
+  }
+
+  /**
+   * Single toggle interface to interact with three.js environment.
+   * @param  {string} toggleType What kind of toggle needs to be executed.
+   * @return {[type]}            [description]
+   */
+  function toggle(toggleType) {
+    switch(toggleType){
+      case "arrows":
+          Demo.Util.toggleArrows(demo.arrows);
+        break;
+      case "rotate":
+        rotateCamera = (rotateCamera) ? false : true;
+        break;
+      case "wireframes":
+        Demo.Util.toggleWireframes(demo.collisions);
+        break;
+      default:
+        $log.error('ThreeEnv: no toggle param set');
+        break;
+    }
+
+  }
 
 
   //-------------------------------------------------------
@@ -73,6 +106,7 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
 
   var tttGame = {
     init: init,
+    toggle: toggle,
     // update: update,
     // destroy: destroy,
     // renderNow: renderNow,

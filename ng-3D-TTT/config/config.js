@@ -7,8 +7,18 @@ var SETUP = {
     FOV: 70,
     ORTHO: false,
     VIEWSIZE: 1000,
+    THETA_DELTA: 0.3,
   },
   SCENE: {
-    HELPERS: true,
+    HELPERS: false,
+  },
+  COLORS: {
+    CUBE1: 0x6ACEEB,
+    CUBE2: 0xFFFFFF,
+    CUBE3: 0xCCCCCC,
+  },
+  CUBES: {
+    DIMENSION: 10,
+    SEPERATION: 25,
   }
 };

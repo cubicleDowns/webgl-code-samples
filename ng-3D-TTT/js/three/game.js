@@ -2,7 +2,6 @@ var Demo = Demo || {};
 
 Demo.Game = function () {
 
-  // scene graph and other stuff.
   this.turn = 1;
 
   this.scene = null;

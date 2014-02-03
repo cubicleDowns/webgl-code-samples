@@ -153,7 +153,7 @@ Demo.Player.Computer.prototype = {
       weights = {},
       maxDims = this.userDims * this.userDims * this.userDims;
 
-    for(var i = 0; i < maxDims; i++){
+    for(i = 0; i < maxDims; i++){
       weights[i] = {computer: 0, user: 0};
     }
   },

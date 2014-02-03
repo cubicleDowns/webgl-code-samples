@@ -2,16 +2,16 @@
 
   <h1>Ready Player h1?</h1>
   <hr />
-  <p class="select">Game Dimensions: <input id="gridDimensions" type="number" min="3" max="10" ng-model="dims" step="1"></p>
+  <p class="select">Game Dimensions: <input type="number" name="dims" ng-model="dims" min="3" max="10"></p>
   <hr />
-  <p>This demo uses THREE.js rays and ray casters to determin win conditions and to calculate the computers next turn.</p>
+  <p>This demo uses THREE.js rays and ray casters to determine win conditions and to calculate the computers next turn.</p>
   <hr />
   <p>The ray approach works for N-N-N dimenions of tic-tac-toe.  I've clamped the number of dimensions to 10.</p>
   <hr />
     <p>If you pick 10, you'll need to connect 10 in a row.</p>
   <hr />
   <p>
-    <input type="text" ng-model="username"></input>
+    <input type="text" ng-model="username">
   </p>
   <p>
     <label>You first?<input type="checkbox" ng-model="userfirst"></label>
@@ -27,6 +27,6 @@
   <li id="toggle-wireframes" class="toggle toggle-wireframes-off" ng-click="toggleWireframes()"></li>
 </ul>
 
-<ul class="info"><li>jQuery: v1.9.1 - </li><li>&nbsp;THREE.js: v63 -&nbsp;</li> <li> WebGL required</li> </ul>
+<ul class="info"><li>jQuery: v1.9.1 - </li><li>&nbsp;THREE.js: v65 -&nbsp;</li> <li> WebGL required</li> </ul>
 <h4><a href="http://blog.tempt3d.com/" target="_blank">blog.tempt3d.com</a></h4>
 <div id="ray-intersection"><canvas id="ttt-canvas" selectcube></canvas>
