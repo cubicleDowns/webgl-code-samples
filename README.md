@@ -1,7 +1,7 @@
 code-samples
 ============
 
-Code samples for my blog, blog.tempt3d.com
+Code samples for my blog, http://blog.tempt3d.com
 
 ##ng-3D-TTT
 Angular implementation of a 3D tic-tac-toe game.
