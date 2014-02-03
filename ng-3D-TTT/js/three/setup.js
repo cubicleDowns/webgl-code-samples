@@ -8,24 +8,24 @@ Demo.Scene.Setup = function (params) {
 
   this.context = params.context;
 
-  this.gameDimensions = params.cubes;
+  this.gameDimensions = this.context.dims;
 
-  this.width = this.context.jqContainer.width();
-  this.height = this.context.jqContainer.height();
+  this.WIDTH = this.context.container.clientWidth;;
+  this.HEIGHT = this.context.container.clientHeight;
 
   // size of a cube
-  this.cubeDim = 10;
+  this.cubeDim = SETUP.CUBES.DIMENSION;
 
   // distance between cube centroids  [5c5]555[5c5]555[5c5] etc.
-  this.cubeSeparation = 25;
+  this.cubeSeparation = SETUP.CUBES.SEPERATION;
 
   this.displacement = (this.cubeSeparation * (this.gameDimensions - 1))/2;
 
   this.mesh = null;
 
-  this.cubeColor1 = new THREE.Color(0x6ACEEB);
-  this.cubeColor2 = new THREE.Color(0xFFFFFF);
-  this.cubeColor3 = new THREE.Color(0xCCCCCC);
+  this.cubeColor1 = new THREE.Color(SETUP.COLORS.CUBE1);
+  this.cubeColor2 = new THREE.Color(SETUP.COLORS.CUBE2);
+  this.cubeColor3 = new THREE.Color(SETUP.COLORS.CUBE3);
 
   this.init();
 };
@@ -45,15 +45,19 @@ Demo.Scene.Setup.prototype = {
    * Setup the render inforamtion.
    */
   setupRenderer: function () {
-    this.context.renderer.setSize(this.width, this.height);
-    this.context.container.appendChild(this.context.renderer.domElement);
+    this.context.renderer.setSize(this.WIDTH, this.HEIGHT);
+    this.context.jqContainer.fadeIn();
   },
 
   /**
    * Add supporting geometry to the scene.  Axis helpers, stats, grid etc.
    */
   createGeometry: function () {
-    this.context.scene.add(new THREE.AxisHelper(10));
+
+    if(SETUP.SCENE.HELPERS){
+      this.context.scene.add(new THREE.AxisHelper(10));
+    }
+
     this.createCubes();
     this.createRays();
   },
@@ -101,6 +105,7 @@ Demo.Scene.Setup.prototype = {
 
           // this is the signifier for the Tic-Tac-Toe choice.
           mesh.ttt = null;
+          // this is a sequential number.   i prefer a linear sequence.
           num++;
 
           // instead of using scene.children, I create an array for ray collisions.

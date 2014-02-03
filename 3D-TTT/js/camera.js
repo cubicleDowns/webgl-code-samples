@@ -21,26 +21,18 @@ Demo.Scene.Cameras = function (params) {
 
     this.controls = null;
 
-    this.init();
+    this.initPerspective();
 };
 
 Demo.Scene.Cameras.prototype = {
-
-    /**
-     * Initialize the camera object and create default cameras.
-     */
-    init: function () {
-        this.initPerspective();
-    },
 
     /**
      * Initialize the perspective camera.
      */
     initPerspective: function () {
         this.liveCam = new THREE.PerspectiveCamera(this.FOV, this.ASPECT_RATIO, this.NEAR_PLANE, this.FAR_PLANE);
-        var dim = (this.cameraMultiplier / 2) * 25;
+        var dim = (this.cameraMultiplier) * 25;
         var hyp = Math.sqrt(dim*dim + dim*dim + dim*dim);
-        console.log(hyp);
         this.liveCam.position.z = hyp;
     }
 

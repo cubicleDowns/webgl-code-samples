@@ -40,7 +40,7 @@ Demo.Scene.prototype = {
     var params = {context: this, cubes: dims};
     this.cameras = new Demo.Scene.Cameras(params);
     this.setup = new Demo.Scene.Setup(params);
-    this.controls = new THREE.OrbitControls( this.cameras.liveCam );
+    this.controls = new THREE.OrbitControls( this.cameras.liveCam, this.container );
 
     this.listeners();
   },
@@ -63,9 +63,10 @@ Demo.Scene.prototype = {
 
   /**
    * Animates the scene
+   * @param {Boolean} animate
    */
   animate: function (animate) {
-    this.rotateCamera = animate;
+    this.rotateCamera = animate || true;
     // NOTE: using the global variable "demo" instead of "this".
       requestAnimationFrame(demo.scene.animate);
       demo.scene.render();
@@ -85,6 +86,8 @@ Demo.Scene.prototype = {
       this.cameras.liveCam.position.y = this.radius * Math.sin(THREE.Math.degToRad(this.theta));
       this.cameras.liveCam.position.z = this.radius * Math.cos(THREE.Math.degToRad(this.theta));
       this.cameras.liveCam.lookAt(this.scene.position);
+    } else {
+      this.controls.update();
     }
 
     // NOTE: using the global variable "demo" instead of "this".
