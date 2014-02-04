@@ -1,6 +1,7 @@
 "use strict";
 
 tttApp.directive("selectcube", function(ThreeEnv){
+
   return {
     restrict: "A",
     link: function(scope, element){

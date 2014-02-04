@@ -53,34 +53,20 @@ Demo.Game.prototype = {
   },
 
   startGame: function () {
-    var userName = $('#userName').val(),
-        userColor = $('#userColor').val(),
-        gameDims = parseInt($('#gridDimensions').val(), 10),
-        smart = $('#smartComputer').val(),
-        // winNum = parseInt($('#winNum').val(), 10),
-        userFirst = $('#userFirst').is(":checked");
 
-    me.userDims = gameDims;
-    // me.winNum = winNum;
+    this.playerManager = new Demo.PlayerManager({context: this, turn: 1});
 
-    me.scene = new Demo.Scene("ray-intersection", gameDims);
-
-    var turn = (userFirst) ? 0 : 1;
-
-    me.playerManager = new Demo.PlayerManager({context: me, turn: turn});
-
-    var user = new Demo.Player.User({ context: me, name: userName, cssColor: userColor});
-    var computer = new Demo.Player.Computer({context: me, cssColor: "#FF0000"});
+    var user = new Demo.Player.User({ context: this, name: "user player", cssColor: "#00FF00"});
+    var computer = new Demo.Player.Computer({context: this, cssColor: "#FF0000"});
 
     // add user first.
-    me.playerManager.addPlayer(user);
-    me.playerManager.addPlayer(computer);
+    this.playerManager.addPlayer(user);
+    this.playerManager.addPlayer(computer);
 
     $.event.trigger({
       type: "nextTurn",
     });
 
-    me.scene.animate();
   },
 
   /**

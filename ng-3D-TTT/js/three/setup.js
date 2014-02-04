@@ -10,7 +10,7 @@ Demo.Scene.Setup = function (params) {
 
   this.gameDimensions = this.context.dims;
 
-  this.WIDTH = this.context.container.clientWidth;;
+  this.WIDTH = this.context.container.clientWidth;
   this.HEIGHT = this.context.container.clientHeight;
 
   // size of a cube

@@ -31,7 +31,7 @@ Demo.Util = {
   /**
    *  Create a random color
    */
-  randomColor: function () {
+  randomHex: function () {
     return ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
   },
 
@@ -62,13 +62,16 @@ Demo.Util = {
     mesh.ttt = params.name;
   },
 
+
   /**
    *   Change a group of meshes to random colors.
+   *   @param {THREE.Mesh} mesh Cube mesh.
    */
-  highlight: function (meshes) {
-    for(var i = 0; i < meshes.length; i++) {
-      meshes[i].mesh.material.color = this.randomColor();
-    }
+  changeColor: function (mesh) {
+
+    var rand = parseInt('0x' + this.randomHex(), 16);
+    mesh.object.material.color.setHex(rand);
+
   }
 
 };

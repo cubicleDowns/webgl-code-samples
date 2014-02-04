@@ -9,7 +9,7 @@ Demo.PlayerManager = function (params) {
 
   this.players = [];
 
-  this.turn = params.turn;
+  this.turn = 1;
 
   this.init();
 
@@ -54,6 +54,8 @@ Demo.PlayerManager.prototype = {
    * @return {[type]}
    */
   turnListener: function () {
+    //TODO  Make this into a service?
+
     var me  = this;
     $(document).on("nextTurn", function () {
       me.nextTurn();
