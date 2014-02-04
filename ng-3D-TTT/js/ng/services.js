@@ -52,11 +52,12 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
    */
   function makeSelection(mouse) {
     $log.info('selection: ', mouse);
-    // var intersected = demo.interaction.intersectCubes(mouse);
-    // if(intersected.length > 0){
-    //   demo.textures.selectUnits(intersected);
-    //   demo.render();
-    // }
+
+    var intersected = demo.interactions.intersect(mouse);
+    if(intersected.length > 0){
+      demo.textures.selectUnits(intersected);
+      demo.render();
+    }
   }
 
   function marqueeSelection(mouse) {
