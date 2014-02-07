@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
 
@@ -59,7 +59,7 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
       type: "userClick",
       message: mouse
     });
-    
+
   }
 
   /**
@@ -113,5 +113,5 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
   };
 
   return tttGame;
-});
 
+});

@@ -1,3 +1,5 @@
+"use strict";
+
 var Demo = Demo || {};
 
 Demo.Game = function (params) {
