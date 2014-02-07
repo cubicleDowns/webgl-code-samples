@@ -9,7 +9,7 @@ Demo.PlayerManager = function (params) {
 
   this.players = [];
 
-  this.turn = params.turn;
+  this.turn = (params.turn) ? 1 : 0;
 
   this.init();
 
@@ -43,9 +43,14 @@ Demo.PlayerManager.prototype = {
       //reset to 0 of num users run out
       this.turn %= this.players.length;
 
+
+      console.log(player.name + " " + this.turn);
+
+
       // each player has their own takeTurn method
       // which calls either turn logic or enables interaction with the canvas
       player.takeTurn();
+
     }
   },
 
@@ -59,7 +64,6 @@ Demo.PlayerManager.prototype = {
       me.nextTurn();
     });
   },
-
 
 };
 

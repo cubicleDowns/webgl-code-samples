@@ -13,6 +13,8 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
   function init(params) {
 
     demo = new Demo.Scene(params);
+    demo.init();
+    demo.game.init(params);
     animate();
 
   }
@@ -51,16 +53,13 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
    * @return {[type]}       [description]
    */
   function makeSelection(mouse) {
-    $log.info('selection: ', mouse);
-    // var intersected = demo.interaction.intersectCubes(mouse);
-    // if(intersected.length > 0){
-    //   demo.textures.selectUnits(intersected);
-    //   demo.render();
-    // }
-  }
+    console.info('selection: ', mouse);
 
-  function marqueeSelection(mouse) {
-
+    $.event.trigger({
+      type: "userClick",
+      message: mouse
+    });
+    
   }
 
   /**

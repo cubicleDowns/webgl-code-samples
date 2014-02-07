@@ -1,16 +1,14 @@
 var Demo = Demo || {};
 
-Demo.Game = function () {
+Demo.Game = function (params) {
 
-  this.turn = 1;
+  this.turn = null;
 
-  this.scene = null;
+  this.context = params.context;
 
   this.gameOver = false;
 
-  this.userDims = 3;
-
-  this.winNum = 3;
+  this.userDims = null;
 
   this.playerManager = null;
 
@@ -18,73 +16,24 @@ Demo.Game = function () {
 
 Demo.Game.prototype = {
 
-  init: function () {
+  init: function (params) {
 
-    this.listeners();
+    var user, computer;
 
-  },
+    this.playerManager = new Demo.PlayerManager({context: this, turn: params.userFirst});
 
-  /**
-   * Event listeners for the UI.
-   * @return {[type]} [description]
-   */
-  listeners: function () {
 
-    var me = this;
+    user = new Demo.Player.User({ context: this, name: params.userName, cssColor: params.userColor}),
+    computer = new Demo.Player.Computer({context: this, cssColor: "#FF0000"});
 
-    $("#toggle-arrows").on("click", function () {
-      $("#toggle-arrows").toggleClass("toggle-arrows-on");
-      $("#toggle-arrows").toggleClass("toggle-arrows-off");
-      Demo.Util.toggleArrows(me.scene.arrows);
+    // add user first b/c of userFirst turn value.
+    this.playerManager.addPlayer(user);
+    this.playerManager.addPlayer(computer);
+
+    $.event.trigger({
+      type: "nextTurn",
     });
 
-    $("#toggle-rotate").on("click", function () {
-      $("#toggle-rotate").toggleClass("toggle-rotate-on");
-      $("#toggle-rotate").toggleClass("toggle-rotate-off");
-      me.scene.rotateCamera = (me.scene.rotateCamera) ? false : true;
-    });
-
-    $("#toggle-wireframes").on("click", function () {
-      $("#toggle-wireframes").toggleClass("toggle-wireframes-on");
-      $("#toggle-wireframes").toggleClass("toggle-wireframes-off");
-      Demo.Util.toggleWireframes(me.scene.collisions);
-    });
-
-    $("#startGame").on("click", function (e) {
-
-      $("body").append('<div id="ray-intersection"></div>');
-      $("#what").fadeOut();
-
-      var userName = $('#userName').val(),
-          userColor = $('#userColor').val(),
-          gameDims = parseInt($('#gridDimensions').val(), 10),
-          smart = $('#smartComputer').val(),
-          // winNum = parseInt($('#winNum').val(), 10),
-          userFirst = $('#userFirst').is(":checked");
-
-      me.userDims = gameDims;
-      // me.winNum = winNum;
-
-      me.scene = new Demo.Scene("ray-intersection", gameDims);
-
-      var turn = (userFirst) ? 0 : 1;
-
-      me.playerManager = new Demo.PlayerManager({context: me, turn: turn});
-
-      var user = new Demo.Player.User({ context: me, name: userName, cssColor: userColor});
-      var computer = new Demo.Player.Computer({context: me, cssColor: "#FF0000"});
-
-      // add user first.
-      me.playerManager.addPlayer(user);
-      me.playerManager.addPlayer(computer);
-
-      $.event.trigger({
-        type: "nextTurn",
-      });
-
-      me.scene.animate();
-
-    });
   },
 
   /**
@@ -102,8 +51,8 @@ Demo.Game.prototype = {
         ticUser1,
         ticUser2;
 
-    for(i = 0; i < this.scene.rays.length; i++){
-      collisions = this.scene.rays[i].intersectObjects(this.scene.collisions);
+    for(i = 0; i < this.context.rays.length; i++){
+      collisions = this.context.rays[i].intersectObjects(this.context.collisions);
       ticUser1 = 0;
       ticUser2 = 0;
 

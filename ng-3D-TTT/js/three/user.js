@@ -7,7 +7,7 @@ Demo.Player = Demo.Player || {};
  */
 Demo.Player.User = function ( params ) {
 
-    this.context = params.context;
+    this.manager = params.context;
 
     this.name = params.name || "Player 1";
 
@@ -36,21 +36,18 @@ Demo.Player.User.prototype = {
    * @return {[type]} [description]
    */
   enableClick: function () {
-
     var me = this;
-
-    $("#ray-intersection").bind("click", function (e){
-      if(!me.context.gameOver){
-        me.selectCube(e);
-      }
+    $(document).on("userClick", function (mouse){
+      me.selectCube(mouse.message);
     });
   },
+
 
   /**
    * Unbind the disableClick
    */
   disableClick: function () {
-    $("#ray-intersection").unbind('click');
+    $(document).off("userClick");
   },
 
   /**
@@ -58,7 +55,7 @@ Demo.Player.User.prototype = {
    * @param  {[type]} event Event information including mouse coordinates.
    * @return {[type]}       [description]
    */
-  selectCube: function (event){
+  selectCube: function (mouseInfo){
 
     var mouse = {},
       leftOffset,
@@ -67,36 +64,24 @@ Demo.Player.User.prototype = {
       ray,
       intersected;
 
-    event.preventDefault();
+    vector = new THREE.Vector3(mouseInfo.x, mouseInfo.y, 1);
+    this.manager.context.projector.unprojectVector(vector, this.manager.context.cameras.liveCam);
 
-
-    // since this isn't a full screen app, lets use the dimensions of the container div.
-    // OFFSET change.  Now I'll adjust the offset of the canvas element from the click.
-    leftOffset = this.context.scene.jqContainer.offset().left;
-    topOffset = this.context.scene.jqContainer.offset().top;
-
-    mouse.x = ((event.clientX - leftOffset) / this.context.scene.jqContainer.width()) * 2 -1;
-    mouse.y = -((event.clientY - topOffset) / this.context.scene.jqContainer.height()) * 2 + 1;
-
-    vector = new THREE.Vector3(mouse.x, mouse.y, 1);
-    this.context.scene.projector.unprojectVector(vector, this.context.scene.cameras.liveCam);
-
-    ray = new THREE.Raycaster(this.context.scene.cameras.liveCam.position, vector.sub(this.context.scene.cameras.liveCam.position).normalize());
+    ray = new THREE.Raycaster(this.manager.context.cameras.liveCam.position, vector.sub(this.manager.context.cameras.liveCam.position).normalize());
 
     // Casting a ray to find if there is an intersection.
-    intersected = ray.intersectObjects( this.context.scene.collisions );
+    intersected = ray.intersectObjects( this.manager.context.collisions );
 
     // only change the first (closest) intersected object.
     if(intersected.length > 0) {
 
       if(intersected[0].object.ttt === null) {
-
         Demo.Util.selectCube(intersected[0].object, {color: this.cssColor, name: this.name });
 
-        this.context.checkForTTT();
+        this.manager.checkForTTT();
         this.disableClick();
 
-        if(!this.context.gameOver) {
+        if(!this.manager.gameOver) {
             // after a short pause, execute user code.
             $.event.trigger({
               type: "nextTurn",

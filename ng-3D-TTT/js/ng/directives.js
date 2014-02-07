@@ -10,8 +10,10 @@ tttApp.directive("selectcube", function(ThreeEnv){
         mouseDown = {x: null, y:null};
 
       element.bind('mousedown', function(event){
-        mouseDown.x = event.clientX - event.currentTarget.offsetLeft;
-        mouseDown.y = event.clientY - event.currentTarget.offsetTop;
+
+        // normalizing X/Y mousedown positions WRT the canvas position.
+        mouseDown.x = ((event.clientX - event.currentTarget.offsetLeft) / event.currentTarget.width) * 2 - 1;
+        mouseDown.y = -((event.clientY - event.currentTarget.offsetTop) / event.currentTarget.height) * 2 + 1;
 
         ThreeEnv.makeSelection(mouseDown);
       });

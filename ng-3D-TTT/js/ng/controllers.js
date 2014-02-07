@@ -6,7 +6,7 @@ tttApp.controller('TTTController', function ($scope, ThreeEnv) {
 
   $scope.usercolor = "#0000FF";
   $scope.username = "Player1";
-  $scope.userfirst = true;
+  $scope.userfirst = false;
 
   var canvasId = "ttt-canvas";
 
@@ -25,13 +25,14 @@ tttApp.controller('TTTController', function ($scope, ThreeEnv) {
     // in normal JS callbacks you'd reference the values with 'var me = this'.  then reference 'me' in the callback function.
     var params = {
             dims: this.dims,
-            usercolor: this.usercolor,
-            username: this.username,
-            userfirst: this.userfirst,
+            userColor: this.usercolor,
+            userName: this.username,
+            userFirst: this.userfirst,
             canvasId: canvasId
           };
 
     ThreeEnv.init(params);
+
   };
 
   //////////////////////////////////////////////////////////

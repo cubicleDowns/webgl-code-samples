@@ -22,6 +22,7 @@ Demo.Scene = function (params) {
   this.setup = null;
   this.cameras = null;
   this.controls = null;
+  this.game = null;
 
   this.players = [];
 
@@ -43,8 +44,12 @@ Demo.Scene.prototype = {
     this.setup = new Demo.Scene.Setup(params);
     this.cameras = new Demo.Scene.Cameras(params);
     this.controls = new THREE.OrbitControls( this.cameras.liveCam, this.container );
-
+    this.game = new Demo.Game({context: this});
     this.listeners();
+  },
+
+  startGame: function () {
+
   },
 
   listeners: function () {

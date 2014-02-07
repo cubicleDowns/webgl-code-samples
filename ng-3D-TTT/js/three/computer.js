@@ -7,7 +7,7 @@ Demo.Player = Demo.Player || {};
  */
 Demo.Player.Computer = function ( params ) {
 
-  this.context = params.context;
+  this.manager = params.context;
   this.name = params.name || "Computer";
   this.cssColor = params.color || "#FF0000";
   this.random = params.random || true;
@@ -42,10 +42,9 @@ Demo.Player.Computer.prototype = {
     var i,
       me = this,
       cube,
-      randomVal = Demo.Util.randomTTTCube(this.context.userDims);
+      randomVal = Demo.Util.randomTTTCube(this.manager.context.dims);
 
-    cube = this.context.scene.collisions[randomVal];
-
+    cube = this.manager.context.collisions[randomVal];
     // if the interesected cube hasn't been selected, make the selection!
     if(cube.ttt === null){
       this.makeSelection(cube);
@@ -62,9 +61,11 @@ Demo.Player.Computer.prototype = {
     var me = this;
 
     setTimeout(function () {
+    debugger;
+
       Demo.Util.selectCube(cube, {color: me.cssColor, name: me.name });
-      me.context.checkForTTT();
-      if(!me.context.gameOver){
+      me.manager.checkForTTT();
+      if(!me.manager.gameOver){
         // adding a little delay for realism.
         $.event.trigger({
           type: "nextTurn",
