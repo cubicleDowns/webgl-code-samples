@@ -9,7 +9,7 @@ Demo.PlayerManager = function (params) {
 
   this.players = [];
 
-  this.turn = 1;
+  this.turn = (params.turn) ? 1 : 0;
 
   this.init();
 
@@ -43,9 +43,14 @@ Demo.PlayerManager.prototype = {
       //reset to 0 of num users run out
       this.turn %= this.players.length;
 
+
+      console.log(player.name + " " + this.turn);
+
+
       // each player has their own takeTurn method
       // which calls either turn logic or enables interaction with the canvas
       player.takeTurn();
+
     }
   },
 
@@ -54,14 +59,11 @@ Demo.PlayerManager.prototype = {
    * @return {[type]}
    */
   turnListener: function () {
-    //TODO  Make this into a service?
-
     var me  = this;
     $(document).on("nextTurn", function () {
       me.nextTurn();
     });
   },
-
 
 };
 

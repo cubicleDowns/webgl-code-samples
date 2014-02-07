@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
 
@@ -13,6 +13,8 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
   function init(params) {
 
     demo = new Demo.Scene(params);
+    demo.init();
+    demo.game.init(params);
     animate();
 
   }
@@ -51,13 +53,14 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
    * @return {[type]}       [description]
    */
   function makeSelection(mouse) {
+    console.info('selection: ', mouse);
 
-    var intersected = demo.interactions.intersect(mouse);
-    if(intersected.length > 0){
-      Demo.Util.changeColor(intersected[0]);
-    }
+    $.event.trigger({
+      type: "userClick",
+      message: mouse
+    });
+
   }
-
 
   /**
    * Single toggle interface to interact with three.js environment.
@@ -67,7 +70,7 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
   function toggle(toggleType) {
     switch(toggleType){
       case "arrows":
-        Demo.Util.toggleArrows(demo.arrows);
+          Demo.Util.toggleArrows(demo.arrows);
         break;
       case "rotate":
         rotateCamera = (rotateCamera) ? false : true;
@@ -79,6 +82,7 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
         $log.error('ThreeEnv: no toggle param set');
         break;
     }
+
   }
 
 
@@ -109,5 +113,5 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
   };
 
   return tttGame;
-});
 
+});
