@@ -94,6 +94,9 @@ Demo.Scene.Setup.prototype = {
       materialInside = new THREE.MeshLambertMaterial({color: this.cubeColor3}),
       cubeGroup = new THREE.Object3D();
 
+    // just in case this is executed twice
+    this.context.collisions = [];
+
     // this approach should work for any dimension tic-tac-toe setup.  e.g. 4x4x4
     for(i = 0; i < this.gameDimensions; i++){
       for(j = 0; j < this.gameDimensions; j++){

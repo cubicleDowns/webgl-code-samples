@@ -61,8 +61,6 @@ Demo.Player.Computer.prototype = {
     var me = this;
 
     setTimeout(function () {
-    debugger;
-
       Demo.Util.selectCube(cube, {color: me.cssColor, name: me.name });
       me.manager.checkForTTT();
       if(!me.manager.gameOver){

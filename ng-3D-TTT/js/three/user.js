@@ -37,7 +37,7 @@ Demo.Player.User.prototype = {
    */
   enableClick: function () {
     var me = this;
-    $(document).on("userClick", function (mouse){
+    $(document).bind("userClick", function (mouse){
       me.selectCube(mouse.message);
     });
   },
@@ -47,7 +47,7 @@ Demo.Player.User.prototype = {
    * Unbind the disableClick
    */
   disableClick: function () {
-    $(document).off("userClick");
+    $(document).unbind("userClick");
   },
 
   /**
