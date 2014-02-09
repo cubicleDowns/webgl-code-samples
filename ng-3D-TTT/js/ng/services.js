@@ -13,7 +13,6 @@ tttApp.factory('ThreeEnv', function ($http, $log, $rootScope ) {
   function init(params) {
 
     demo = new Demo.Scene(params);
-    demo.init();
     demo.game.init(params);
     animate();
 
