@@ -12,6 +12,10 @@ Demo.Player.Computer = function ( params ) {
   this.cssColor = params.color || "#FF0000";
   this.random = params.random || true;
 
+  this.scene = this.manager.context;
+
+  this.random = false;
+
   this.isHuman = false;
 
   this.uid = Demo.Util.generateUUID();
@@ -87,17 +91,7 @@ Demo.Player.Computer.prototype = {
       bestSelection = uhoh.shift();
     }
 
-    this.makeComputerSelection(bestSelection);
-  },
-
-  //TODO
-  findTurn: function () {
-
-  },
-
-  //TODO
-  blockOpponent: function () {
-
+    this.makeSelection(bestSelection);
   },
 
   // looks for rays intersections sets where a single cube has not been selected.
@@ -110,28 +104,43 @@ Demo.Player.Computer.prototype = {
         personUser,
         computerUser;
 
+    var computerName = (this.name === this.manager.playerManager.players[0].name) ? this.name : this.manager.playerManager.players[1].name;
+    var userName = (this.name !== computerName) ? this.manager.playerManager.players[1].name : this.manager.playerManager.players[0].name;
+
+
+
     for(i = 0; i < this.scene.rays.length; i++){
       collisions = this.scene.rays[i].intersectObjects(this.scene.collisions);
       personUser = 0;
       computerUser = 0;
 
       for(j = 0; j < collisions.length; j++){
-        if(collisions[j].object.ttt === 'user'){
+        if(collisions[j].object.ttt === userName){
           personUser++;
-        } else if (this.scene.collisions[j].ttt === 'computer'){
+        } else if (collisions[j].object.ttt === computerName){
           computerUser++;
         }
       }
 
       // push the positions that have N-1 selections from the human user already
-      if(personUser === (collisions.length - 2)){
-        lossSlots.push(collisions[j].object.num);
+      if(personUser === (collisions.length - 2) && personUser >= 4){
+        for(var k = 0; k < collisions.length; k++){
+          if(collisions[k].object.ttt === null){
+            lossSlots.push(collisions[k].object);
+            break;
+          }
+        }
       }
 
       // push the positions that have N-1 selections from the computer user already
       // these are winning selections
-      if (computerUser === (collisions.length - 2)){
-        winSlots.push(collisions[j].object.num);
+      if (computerUser === (collisions.length - 2) && computerUser >= 4){
+        for(var l = 0; l < collisions.length; l++){
+          if(collisions[l].object.ttt === null){
+            winSlots.push(collisions[l].object);
+            break;
+          }
+        }
       }
     }
 
@@ -140,8 +149,8 @@ Demo.Player.Computer.prototype = {
     // else, return false as there aren't any win or loss selection options.
     if(winSlots.length > 0){
       return winSlots;
-    } else if(blockSlots.length > 0) {
-      return blockSlots;
+    } else if(lossSlots.length > 0) {
+      return lossSlots;
     } else {
       return false;
     }
@@ -150,11 +159,13 @@ Demo.Player.Computer.prototype = {
   setupWeightObject: function () {
     var i,
       weights = {},
-      maxDims = this.userDims * this.userDims * this.userDims;
+      maxDims = Math.pow(this.scene.dims, 3);
 
     for(i = 0; i < maxDims; i++){
-      weights[i] = {computer: 0, user: 0};
+      weights[i] = {computer: 0, user: 0, empty: 0};
     }
+
+    return weights;
   },
 
   // finds the best selection location for the computer
@@ -171,16 +182,87 @@ Demo.Player.Computer.prototype = {
       collisions = this.scene.rays[i].intersectObjects(this.scene.collisions);
 
       for(j = 0; j < collisions.length; j++){
-        if(collisions[j].object.ttt === this.context.playerManager.players[0].name){
-          weighting[collisions[j].object.num].user++;
-        } else if (this.scene.collisions[j].ttt === this.context.playerManager.players[0].name){
-          weighting[collisions[j].object.num].computer++;
+        if(collisions[j].object.ttt === this.manager.playerManager.players[0].name){
+          weighting[collisions[j].object.cubeNum].user++;
+        } else if (this.scene.collisions[j].ttt === this.manager.playerManager.players[1].name){
+          weighting[collisions[j].object.cubeNum].computer++;
+        } else {
+          weighting[collisions[j].object.cubeNum].empty++;
         }
       }
     }
 
-    return weighting;
+    var cubeWeights = this.selectHighestWeightedCube(weighting);
+
+    var num = this.selectCubeFromWeightedCategories(cubeWeights);
+
+    return this.scene.collisions[num];
+
+  },
+
+  selectCubeFromWeightedCategories: function (cubeWeights) {
+
+    var selectedCube = null;
+
+    // look for the first weighted cube that hasn't been selected
+    if(cubeWeights.computer[0].weight !== 0){
+      // look in computer weighted cubes for onethat hasn't been selected yet
+      for(var i = 0; i < cubeWeights.computer.length; i++){
+        if(this.scene.collisions[cubeWeights.computer[i].cube].ttt === null){
+          selectedCube = cubeWeights.computer[i].cube;
+          break;
+        }
+      }
+    } else {
+      // look in empty weighted cubes for one that hasn't been selected yet.
+      for(var i = 0; i < cubeWeights.empty.length; i++){
+        if(this.scene.collisions[cubeWeights.empty[i].cube].ttt === null){
+          selectedCube = cubeWeights.empty[i].cube;
+          break;
+        }
+      }
+    }
+
+
+    return selectedCube;
+  },
+
+  selectHighestWeightedCube: function (weights){
+
+    var emptyHighest = [];
+    var userHighest = [];
+    var computerHighest = []
+
+    var highestEmpty = {cube: null, weight: 0},
+      highestComputer = {cube: null, weight: 0},
+      highestUser = {cube: null, weight: 0};
+
+    for(var i in weights){
+
+
+      if(weights[i].empty >= highestEmpty.weight){
+        emptyHighest.push({cube: i, weight: weights[i].empty});
+      }
+      if(weights[i].user >= highestUser.weight){
+        userHighest.push({cube: i, weight: weights[i].user});
+      }
+
+      if(weights[i].computer >= highestUser.weight){
+        computerHighest.push({cube: i, weight: weights[i].computer});
+      }
+
+    }
+
+    emptyHighest.sortOn("weight");
+    computerHighest.sortOn("weight");
+    userHighest.sortOn("weight");
+
+    emptyHighest.reverse();
+    computerHighest.reverse();
+    userHighest.reverse();
+
+    return {empty: emptyHighest, computer: computerHighest, user: userHighest};
   },
 
 
-};
+};  

@@ -62,8 +62,5 @@ tttApp.controller('TTTController', function ($scope, ThreeEnv) {
     ThreeEnv.toggle("rotate");
   };
 
-  function init() {
-
-  }
 
 });
