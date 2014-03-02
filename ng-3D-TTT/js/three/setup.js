@@ -274,6 +274,10 @@ Demo.Scene.Setup.prototype = {
         ray1,
         ray2;
 
+    var size = 0.02;
+
+    var jigger = new THREE.Vector3(size, size, size);
+
     // create rays for XY diagonals
     for(i = 0; i < this.gameDimensions; i++){
 
@@ -283,6 +287,9 @@ Demo.Scene.Setup.prototype = {
 
         origin1 = new THREE.Vector3(x,y,z);
         origin2 = new THREE.Vector3(x,-y,z);
+
+        origin1.add(jigger);
+        origin2.add(jigger);
 
         arrow1 = new THREE.ArrowHelper(setup.xy1Direction, origin1, setup.length, 0xFFF000);
         arrow2 = new THREE.ArrowHelper(setup.xy2Direction, origin2, setup.length, 0xFFF000);
@@ -295,7 +302,6 @@ Demo.Scene.Setup.prototype = {
 
         ray1 = new THREE.Raycaster(origin1, setup.xy1Direction);
         ray2 = new THREE.Raycaster(origin2, setup.xy2Direction);
-
         ray1.name = "2D diag - yellow";
         ray2.name = "2D diag - yellow";
 

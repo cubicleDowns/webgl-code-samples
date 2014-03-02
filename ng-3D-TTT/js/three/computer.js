@@ -102,29 +102,42 @@ Demo.Player.Computer.prototype = {
         winSlots = [],
         collisions,
         personUser,
+        emptyUser,
         computerUser;
 
     var computerName = (this.name === this.manager.playerManager.players[0].name) ? this.name : this.manager.playerManager.players[1].name;
     var userName = (this.name !== computerName) ? this.manager.playerManager.players[1].name : this.manager.playerManager.players[0].name;
 
+
     for(i = 0; i < this.scene.rays.length; i++){
-      collisions = this.scene.rays[i].intersectObjects(this.scene.collisions);
+
+      var ray = this.scene.rays[i];
+
+      collisions = Demo.Util.removeDupes(this.scene.rays[i].intersectObjects(this.scene.collisions));
       personUser = 0;
+      emptyUser = 0;
       computerUser = 0;
 
       for(j = 0; j < collisions.length; j++){
-        if(collisions[j].object.ttt === userName){
+        if(collisions[j].ttt === userName){
           personUser++;
-        } else if (collisions[j].object.ttt === computerName){
+        } else if (collisions[j].ttt === computerName){
           computerUser++;
+        } else if (collisions[j].ttt === null){
+          emptyUser++;
         }
       }
 
+      // some of the ray tracing code wasn't returning the correct number of intersections.
+      if(collisions.length < this.scene.dims ){
+        debugger;
+      }
+
       // push the positions that have N-1 selections from the human user already
-      if(personUser === (collisions.length - 2) && computerUser === 0){
+      if(personUser === (collisions.length - 1) && computerUser === 0){
         for(var k = 0; k < collisions.length; k++){
-          if(collisions[k].object.ttt === null){
-            lossSlots.push(collisions[k].object);
+          if(collisions[k].ttt === null){
+            lossSlots.push(collisions[k]);
             break;
           }
         }
@@ -132,10 +145,11 @@ Demo.Player.Computer.prototype = {
 
       // push the positions that have N-1 selections from the computer user already
       // these are winning selections
-      if (computerUser === (collisions.length - 2) && personUser === 0){
+      if (computerUser === (collisions.length - 1) && personUser === 0){
         for(var l = 0; l < collisions.length; l++){
-          if(collisions[l].object.ttt === null){
-            winSlots.push(collisions[l].object);
+          //only push
+          if(collisions[l].ttt === null){
+            winSlots.push(collisions[l]);
             break;
           }
         }
@@ -146,7 +160,6 @@ Demo.Player.Computer.prototype = {
     // return the loss slots second.
     // else, return false as there aren't any win or loss selection options.
     if(winSlots.length > 0){
-      debugger;
       return winSlots;
     } else if(lossSlots.length > 0) {
       return lossSlots;
@@ -178,20 +191,22 @@ Demo.Player.Computer.prototype = {
     weighting = this.setupWeightObject();
 
     for(i = 0; i < this.scene.rays.length; i++){
-      collisions = this.scene.rays[i].intersectObjects(this.scene.collisions);
+      collisions = Demo.Util.removeDupes(this.scene.rays[i].intersectObjects(this.scene.collisions));
 
       for(j = 0; j < collisions.length; j++){
-        if(collisions[j].object.ttt === this.manager.playerManager.players[0].name){
-          weighting[collisions[j].object.cubeNum].user++;
+        if(collisions[j].ttt === this.manager.playerManager.players[0].name){
+          weighting[collisions[j].cubeNum].user++;
         } else if (this.scene.collisions[j].ttt === this.manager.playerManager.players[1].name){
-          weighting[collisions[j].object.cubeNum].computer++;
+          weighting[collisions[j].cubeNum].computer++;
         } else {
-          weighting[collisions[j].object.cubeNum].empty++;
+          weighting[collisions[j].cubeNum].empty++;
         }
       }
     }
 
     var cubeWeights = this.selectHighestWeightedCube(weighting);
+
+    console.log('results' , cubeWeights);
 
     var num = this.selectCubeFromWeightedCategories(cubeWeights);
 

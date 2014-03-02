@@ -76,6 +76,22 @@ Demo.Util = {
     var rand = parseInt('0x' + this.randomHex(), 16);
     mesh.object.material.color.setHex(rand);
 
+  },
+
+  removeDupes: function (meshes){
+
+    var cubeNums = [];
+
+    var uniqIntersections = [];
+
+    for(var i = 0; i < meshes.length; i++){
+      if(cubeNums.indexOf(meshes[i].object.cubeNum) === -1){
+        cubeNums.push(meshes[i].object.cubeNum);
+        uniqIntersections.push(meshes[i].object);
+      }
+    }
+    
+    return uniqIntersections;
   }
 
 };
