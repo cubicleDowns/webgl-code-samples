@@ -8,7 +8,7 @@ Demo.Game = function (params) {
 
   this.context = params.context;
 
-  this.gameOver = false; 
+  this.gameOver = false;
 
   this.userDims = null;
 
@@ -31,10 +31,6 @@ Demo.Game.prototype = {
     // add user first b/c of userFirst turn value.
     this.playerManager.addPlayer(user);
     this.playerManager.addPlayer(computer);
-
-    $.event.trigger({
-      type: "nextTurn",
-    });
 
   },
 

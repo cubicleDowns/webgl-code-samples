@@ -58,7 +58,11 @@ Demo.Util = {
    * @return {[type]}        [description]
    */
   selectCube: function(mesh, params) {
-    mesh.material.color.setStyle(params.color);
+    var newMat = new THREE.MeshBasicMaterial({color: params.color});
+
+    mesh.material = newMat;
+
+    // mesh.material.color.setStyle(params.color);
     mesh.ttt = params.name;
   },
 
@@ -76,7 +80,7 @@ Demo.Util = {
 
 };
 
-// No one (including myself) should be doing this.   
+// No one (including myself) should be doing this.
 Array.prototype.sortOn = function(key){
     this.sort(function(a, b){
         if(a[key] < b[key]){

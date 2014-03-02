@@ -27,6 +27,8 @@ Demo.Scene.Setup = function (params) {
   this.cubeColor2 = new THREE.Color(SETUP.COLORS.CUBE2);
   this.cubeColor3 = new THREE.Color(SETUP.COLORS.CUBE3);
 
+  this.numTextures = [];
+
   this.init();
 };
 
@@ -58,8 +60,38 @@ Demo.Scene.Setup.prototype = {
       this.context.scene.add(new THREE.AxisHelper(10));
     }
 
+    this.cubeTextures();
     this.createCubes();
     this.createRays();
+  },
+
+  cubeTextures: function () {
+
+    var max = Math.pow(this.gameDimensions, 3);
+
+
+    for(var i = 0; i < max; i++){
+
+      var canvas = document.createElement('canvas');
+      var size = 128;
+      canvas.width = size;
+      canvas.height = size;
+
+      var context = canvas.getContext('2d');
+      var texture;
+
+      context.fillStyle = "#FFF000";
+      context.fillRect = (0,0,size,size);
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.font = "55px Arial";
+      context.fillStyle = "#FF0000";
+      context.fillText(i, size/2, size/2);
+      texture = new THREE.Texture(canvas);
+      texture.needsUpdate = true;
+
+      this.numTextures.push(texture);
+    }
   },
 
   /**
@@ -68,10 +100,8 @@ Demo.Scene.Setup.prototype = {
   lights: function () {
 
     var dl,
-        rotatePos = 30 * Math.PI / 180,
-        rotateNeg = -90 * Math.PI / 180;
-
-    // this.context.scene.add(new THREE.AmbientLight(0xFFFFFF));
+      rotatePos = 30 * Math.PI / 180,
+      rotateNeg = -90 * Math.PI / 180;
 
     dlPos = new THREE.DirectionalLight(0xFFFFFF, 1);
     dlPos.position.set(rotatePos,rotatePos,rotatePos);
@@ -87,22 +117,32 @@ Demo.Scene.Setup.prototype = {
   createCubes: function () {
 
     var i,j,k,
+      mesh,
+      mat,
       num = 0,
-      geo = new THREE.CubeGeometry(this.cubeDim, this.cubeDim, this.cubeDim),
-      materialVerts = new THREE.MeshLambertMaterial({color: this.cubeColor1}),
+      geo = new THREE.CubeGeometry(this.cubeDim, this.cubeDim, this.cubeDim, 1, 1, 1),
       materialOutside = new THREE.MeshLambertMaterial({color: this.cubeColor2}),
-      materialInside = new THREE.MeshLambertMaterial({color: this.cubeColor3}),
       cubeGroup = new THREE.Object3D();
 
     // just in case this is executed twice
     this.context.collisions = [];
+
+    var l = 0;
+
 
     // this approach should work for any dimension tic-tac-toe setup.  e.g. 4x4x4
     for(i = 0; i < this.gameDimensions; i++){
       for(j = 0; j < this.gameDimensions; j++){
         for(k = 0; k < this.gameDimensions; k++){
 
-          var mesh = new THREE.Mesh(geo.clone(), materialOutside.clone());
+
+          // var mesh = new THREE.Mesh(geo.clone(), materialOutside.clone());
+          if(SETUP.DEBUG_MODE){
+            mat = new THREE.MeshBasicMaterial({map: this.numTextures[num]});
+          } else {
+            mat = materialOutside;
+          }
+          mesh = new THREE.Mesh(geo.clone(), mat);
           mesh.cubeNum = num;
           mesh.position = new THREE.Vector3((i)*this.cubeSeparation - this.displacement, (j)*this.cubeSeparation - this.displacement, (k)*this.cubeSeparation - this.displacement);
 
@@ -177,6 +217,7 @@ Demo.Scene.Setup.prototype = {
         this.context.arrows.push(arrow);
 
         ray = new THREE.Raycaster(origin, setup.xDirection);
+        ray.name = "2D - down X - red";
         this.context.rays.push(ray);
       }
     }
@@ -196,6 +237,7 @@ Demo.Scene.Setup.prototype = {
         this.context.arrows.push(arrow);
 
         ray = new THREE.Raycaster(origin, setup.yDirection);
+        ray.name = "2D - down Y - green";
         this.context.rays.push(ray);
 
       }
@@ -216,6 +258,7 @@ Demo.Scene.Setup.prototype = {
         this.context.arrows.push(arrow);
 
         ray = new THREE.Raycaster(origin, setup.zDirection);
+        ray.name = "2D - down Z - green";
         this.context.rays.push(ray);
       }
     }
@@ -241,8 +284,8 @@ Demo.Scene.Setup.prototype = {
         origin1 = new THREE.Vector3(x,y,z);
         origin2 = new THREE.Vector3(x,-y,z);
 
-        arrow1 = new THREE.ArrowHelper(setup.xy1Direction, origin1, setup.length, 0xCC0000);
-        arrow2 = new THREE.ArrowHelper(setup.xy2Direction, origin2, setup.length, 0xCC0000);
+        arrow1 = new THREE.ArrowHelper(setup.xy1Direction, origin1, setup.length, 0xFFF000);
+        arrow2 = new THREE.ArrowHelper(setup.xy2Direction, origin2, setup.length, 0xFFF000);
 
         this.context.scene.add(arrow1);
         this.context.scene.add(arrow2);
@@ -252,6 +295,9 @@ Demo.Scene.Setup.prototype = {
 
         ray1 = new THREE.Raycaster(origin1, setup.xy1Direction);
         ray2 = new THREE.Raycaster(origin2, setup.xy2Direction);
+
+        ray1.name = "2D diag - yellow";
+        ray2.name = "2D diag - yellow";
 
         this.context.rays.push(ray1);
         this.context.rays.push(ray2);
@@ -267,8 +313,8 @@ Demo.Scene.Setup.prototype = {
         origin1 = new THREE.Vector3(x,y,z);
         origin2 = new THREE.Vector3(x,y,-z);
 
-        arrow1 = new THREE.ArrowHelper(setup.xz1Direction, origin1, setup.length, 0x00CC00);
-        arrow2 = new THREE.ArrowHelper(setup.xz2Direction, origin2, setup.length, 0x00CC00);
+        arrow1 = new THREE.ArrowHelper(setup.xz1Direction, origin1, setup.length, 0xFF00FF);
+        arrow2 = new THREE.ArrowHelper(setup.xz2Direction, origin2, setup.length, 0xFF00FF);
 
         this.context.scene.add(arrow1);
         this.context.scene.add(arrow2);
@@ -279,6 +325,9 @@ Demo.Scene.Setup.prototype = {
         ray1 = new THREE.Raycaster(origin1, setup.xz1Direction);
         ray2 = new THREE.Raycaster(origin2, setup.xz2Direction);
 
+        ray1.name = "2D diag - pink";
+        ray2.name = "2D diag - pink";
+
         this.context.rays.push(ray1);
         this.context.rays.push(ray2);
     }
@@ -287,14 +336,14 @@ Demo.Scene.Setup.prototype = {
     for(i = 0; i < this.gameDimensions; i++){
 
         x = (i * this.cubeSeparation) - this.displacement;
-        y = (this.gameDimensions - 1) * this.cubeSeparation;
-        z = (this.gameDimensions - 1) * this.cubeSeparation;
+        y = (this.gameDimensions + 1) * this.cubeSeparation;
+        z = (this.gameDimensions + 1) * this.cubeSeparation;
 
         origin1 = new THREE.Vector3(x,y,z);
         origin2 = new THREE.Vector3(x,-y,z);
 
-        arrow1 = new THREE.ArrowHelper(setup.yz1Direction, origin1, setup.length, 0x0000CC);
-        arrow2 = new THREE.ArrowHelper(setup.yz2Direction, origin2, setup.length, 0x0000CC);
+        arrow1 = new THREE.ArrowHelper(setup.yz1Direction, origin1, setup.length, 0x00FFFF);
+        arrow2 = new THREE.ArrowHelper(setup.yz2Direction, origin2, setup.length, 0x00FFFF);
 
         this.context.arrows.push(arrow1);
         this.context.arrows.push(arrow2);
@@ -304,6 +353,9 @@ Demo.Scene.Setup.prototype = {
 
         ray1 = new THREE.Raycaster(origin1, setup.yz1Direction);
         ray2 = new THREE.Raycaster(origin2, setup.yz2Direction);
+
+        ray1.name = "2D diag - aqua";
+        ray2.name = "2D diag - aqua";
 
         this.context.rays.push(ray1);
         this.context.rays.push(ray2);
@@ -317,7 +369,7 @@ Demo.Scene.Setup.prototype = {
         arrow1, arrow2, arrow3, arrow4,
         origin1, origin2, origin3, origin4,
         ray1, ray2, ray3, ray4,
-        distance = (this.gameDimensions + 1) * this.cubeSeparation;
+        distance = (this.gameDimensions) * this.cubeSeparation;
 
     x = distance;
     y = distance;
@@ -328,10 +380,10 @@ Demo.Scene.Setup.prototype = {
     origin3 = new THREE.Vector3(x,y,-z);
     origin4 = new THREE.Vector3(-x,y,-z);
 
-    arrow1 = new THREE.ArrowHelper(setup.xyz1Direction, origin1, setup.length, 0x333333);
-    arrow2 = new THREE.ArrowHelper(setup.xyz2Direction, origin2, setup.length, 0x333333);
-    arrow3 = new THREE.ArrowHelper(setup.xyz3Direction, origin3, setup.length, 0x333333);
-    arrow4 = new THREE.ArrowHelper(setup.xyz4Direction, origin4, setup.length, 0x333333);
+    arrow1 = new THREE.ArrowHelper(setup.xyz1Direction, origin1, setup.length, 0xFFFFFF);
+    arrow2 = new THREE.ArrowHelper(setup.xyz2Direction, origin2, setup.length, 0xFFFFFF);
+    arrow3 = new THREE.ArrowHelper(setup.xyz3Direction, origin3, setup.length, 0xFFFFFF);
+    arrow4 = new THREE.ArrowHelper(setup.xyz4Direction, origin4, setup.length, 0xFFFFFF);
 
     this.context.arrows.push(arrow1);
     this.context.arrows.push(arrow2);
@@ -353,7 +405,6 @@ Demo.Scene.Setup.prototype = {
     this.context.rays.push(ray3);
     this.context.rays.push(ray4);
   },
-
 
 };
 

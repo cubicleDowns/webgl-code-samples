@@ -107,8 +107,6 @@ Demo.Player.Computer.prototype = {
     var computerName = (this.name === this.manager.playerManager.players[0].name) ? this.name : this.manager.playerManager.players[1].name;
     var userName = (this.name !== computerName) ? this.manager.playerManager.players[1].name : this.manager.playerManager.players[0].name;
 
-
-
     for(i = 0; i < this.scene.rays.length; i++){
       collisions = this.scene.rays[i].intersectObjects(this.scene.collisions);
       personUser = 0;
@@ -123,7 +121,7 @@ Demo.Player.Computer.prototype = {
       }
 
       // push the positions that have N-1 selections from the human user already
-      if(personUser === (collisions.length - 2) && personUser >= 4){
+      if(personUser === (collisions.length - 2) && computerUser === 0){
         for(var k = 0; k < collisions.length; k++){
           if(collisions[k].object.ttt === null){
             lossSlots.push(collisions[k].object);
@@ -134,7 +132,7 @@ Demo.Player.Computer.prototype = {
 
       // push the positions that have N-1 selections from the computer user already
       // these are winning selections
-      if (computerUser === (collisions.length - 2) && computerUser >= 4){
+      if (computerUser === (collisions.length - 2) && personUser === 0){
         for(var l = 0; l < collisions.length; l++){
           if(collisions[l].object.ttt === null){
             winSlots.push(collisions[l].object);
@@ -148,6 +146,7 @@ Demo.Player.Computer.prototype = {
     // return the loss slots second.
     // else, return false as there aren't any win or loss selection options.
     if(winSlots.length > 0){
+      debugger;
       return winSlots;
     } else if(lossSlots.length > 0) {
       return lossSlots;
@@ -265,4 +264,4 @@ Demo.Player.Computer.prototype = {
   },
 
 
-};  
+};

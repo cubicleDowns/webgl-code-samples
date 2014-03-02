@@ -20,5 +20,6 @@ var SETUP = {
   CUBES: {
     DIMENSION: 10,
     SEPERATION: 25,
-  }
+  },
+  DEBUG_MODE: true,
 };

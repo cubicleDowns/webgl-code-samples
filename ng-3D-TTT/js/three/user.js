@@ -90,5 +90,4 @@ Demo.Player.User.prototype = {
       }
     }
   },
-
 };

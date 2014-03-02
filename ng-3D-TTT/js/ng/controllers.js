@@ -33,6 +33,10 @@ tttApp.controller('TTTController', function ($scope, ThreeEnv) {
 
     ThreeEnv.init(params);
 
+    $.event.trigger({
+      type: "nextTurn",
+    });
+
   };
 
   //////////////////////////////////////////////////////////
