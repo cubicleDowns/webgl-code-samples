@@ -2,7 +2,7 @@
 
 tttApp.controller('TTTController', function ($scope, ThreeEnv) {
 
-  $scope.dims = 3;
+  $scope.dims = 4;
 
   $scope.usercolor = "#0000FF";
   $scope.username = "Player1";
