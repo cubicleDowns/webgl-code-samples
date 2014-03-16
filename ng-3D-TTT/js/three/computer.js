@@ -85,6 +85,8 @@ Demo.Player.Computer.prototype = {
 
     uhoh = this.blockOpponentOrWin();
 
+
+
     if(!uhoh) {
       bestSelection = this.findBestSelection();
     } else {
@@ -205,9 +207,6 @@ Demo.Player.Computer.prototype = {
     }
 
     var cubeWeights = this.selectHighestWeightedCube(weighting);
-
-    console.log('results' , cubeWeights);
-
     var num = this.selectCubeFromWeightedCategories(cubeWeights);
 
     return this.scene.collisions[num];
@@ -218,8 +217,19 @@ Demo.Player.Computer.prototype = {
 
     var selectedCube = null;
 
-    // look for the first weighted cube that hasn't been selected
-    if(cubeWeights.computer[0].weight !== 0){
+
+
+
+    if (cubeWeights.computer[0] !== 0 && cubeWeights.user[0] !== 0) {
+
+      var comp = cubeWeights.computer[0];
+      var user = cubeWeights.user[0];
+
+      selectedCube = (comp.weight > user.weight) ? comp.cube : user.cube;
+
+      console.count('joint decision');
+
+    } else if(cubeWeights.computer[0].weight !== 0){
       // look in computer weighted cubes for onethat hasn't been selected yet
       for(var i = 0; i < cubeWeights.computer.length; i++){
         if(this.scene.collisions[cubeWeights.computer[i].cube].ttt === null){
