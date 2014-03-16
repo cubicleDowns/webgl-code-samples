@@ -11,10 +11,6 @@ Angular implementation of a THREE.js 3D tic-tac-toe game.
 - Demo how to use custom factory API to bridge THREE.js and AngularJS domains.
 - Extends 3D-TTT implementation.
 
-##Object4D
-Adding native animation to three.js
-- Extend the Object3D mesh with the ability to move over time.
-- Allows Object4D meshes to stop, strat, tween around a three.js scene.
 
 ##canvas-interaction
 Demonstrate canvas interaction with the THREE.js environment.
